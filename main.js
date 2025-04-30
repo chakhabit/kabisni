@@ -26,6 +26,7 @@ const chillColors = [
   "#E0E0E0",
 ];
 let score = 0;
+let vittese = 2000;
 let scoreD = document.querySelector(".score span");
 let scoreCount = setInterval(() => {
   scoreD.textContent = score;
