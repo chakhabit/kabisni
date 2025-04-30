@@ -30,7 +30,6 @@ let scoreD = document.querySelector(".score span");
 let scoreCount = setInterval(() => {
   scoreD.textContent = score;
 }, 1000);
-// let vittese = 2000;
 let vittese = 500;
 let loop = setInterval(randomly, vittese);
 let count = 1;
