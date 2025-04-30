@@ -1,0 +1,263 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    interpolate-size: allow-keywords;
+  }
+}
+
+body {
+  font-family: "Noto Sans Arabic", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-image: url(assets/img/bg.png);
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+#root,
+#__next {
+  isolation: isolate;
+}
+.header_container {
+  padding: 10px 3rem;
+  height: 72px;
+  background-color: rgba(201, 48, 48, 0.459);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .logo {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    img {
+      user-select: none;
+      width: 100px;
+    }
+  }
+  .score {
+    width: 20px;
+    display: flex;
+    justify-content: end;
+    span {
+      font-weight: bold;
+    }
+  }
+}
+.main_container {
+  position: relative;
+  padding: 1rem;
+  flex: 1;
+}
+#circle {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background-color: rgb(41, 70, 187);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: left ease 0.2s, top ease 0.2s, background-color ease 0.5s,
+    scale 0.2s;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+  &:hover {
+    scale: 1.03;
+  }
+}
+.footer_container {
+  background-color: rgba(41, 70, 187, 0.216);
+  margin-bottom: auto;
+  padding: 1rem;
+  p {
+    font-family: "funny", sans-serif;
+    display: block;
+    font-size: 1.05rem;
+    color: rgb(85, 26, 139);
+    &:hover {
+      scale: 1.02;
+    }
+    a {
+      color: rgb(85, 26, 139);
+      text-decoration: none;
+      margin-left: 10px;
+      &:hover {
+        text-decoration: underline dashed;
+      }
+    }
+  }
+}
+.looser {
+  background-color: #3a0ca3;
+  max-width: 550px;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 20px;
+  position: relative;
+  z-index: 5;
+  padding: 1rem;
+  margin: auto;
+  box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
+  animation: fade-in 2s;
+  display: none;
+  text-align: center;
+  h2 {
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    color: #ffd700;
+    margin-bottom: 1rem;
+    span {
+      display: inline-block;
+      animation: bug 3s linear infinite;
+    }
+  }
+  p {
+    font-size: 1.5rem;
+    text-shadow: 1px 1px 3px #888;
+    color: #e2fdff;
+  }
+}
+.start {
+    background-color: #5da30c;
+  max-width: 550px;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 20px;
+  position: relative;
+  z-index: 5;
+  padding: 1rem;
+  margin: auto;
+  box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
+  color: #e2fdff;
+  animation: fade-in 2s;
+  h2 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  button {
+    font-size: 1.5rem;
+    text-shadow: 1px 1px 3px #888;
+    display: block;
+    background-color: #3a0ca3;
+    color: #e2fdff;
+    outline: none;
+    margin-bottom: .5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: .2s;
+    user-select: none;
+    &:hover {
+    color: #ffd700;
+        opacity: .8;
+    }
+    &:first-of-type {
+        width: 60%;
+    }
+    &:last-of-type {
+        width: 40%;
+    }
+  }
+}
+.alert {
+    position: absolute;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    left: 50%;
+    bottom: 1rem;
+    transform: translateX(-50%);
+    animation: fade-in 1s linear;
+    display: none;
+}
+@keyframes bug {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(10px, -10px);
+  }
+  50% {
+    transform: translate(20px, 5px);
+  }
+  75% {
+    transform: translate(-10px, 10px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
