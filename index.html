@@ -3,17 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.cdnfonts.com/css/funny" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap" rel="stylesheet">
+    <meta
+      name="description"
+      content="لعبة تكبيس الدوائر المضحكة! واجه حشرات طائرة، لاما جائعة، وكائن الهورينغ الغامض في مغامرة مليئة بالمرح والفوضى. العب الآن مجانًا!"
+    />
+    <meta
+      name="keywords"
+      content="لعبة, تكبيس الدوائر, ألعاب مضحكة, ألعاب عربية, حشرات طائرة, لعبة الهورينغ, ألعاب تحدي, العاب مجانية, akhabit"
+    />
+    <meta name="author" content="َAlaa MEKIBES" />
+    <meta property="og:title" content="كبسني | Kabisni" />
+    <meta
+      property="og:description"
+      content="حارب الدوائر الهاربة قبل أن تتحول إلى كوارث مضحكة!"
+    />
+    <meta property="og:url" content="https://chakhabit.github.io/kabisni" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://github.com/chakhabit/kabisni/blob/main/assets/img/%D9%83%D8%A8%D8%B3%D9%86%D9%8A.png?raw=true"
+    />
+    <link href="https://fonts.cdnfonts.com/css/funny" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
     <title>كبسني | Kabisni</title>
   </head>
   <body>
     <header class="header_container">
       <div class="logo">
-        <a href="" aria-label="website logo"><img src="assets/img/كبسني.png" alt="كبسني"></a>
+        <a href="" aria-label="website logo"
+          ><img src="assets/img/كبسني.png" alt="كبسني"
+        /></a>
       </div>
       <div class="score">
         <span></span>
@@ -23,20 +48,30 @@
       <div id="circle"></div>
       <div dir="rtl" class="looser box">
         <h2><span>🪳</span> لقد فشلت في التكبيس !</h2>
-        <p>الهورينغ استغل الفوضى، وطار بالانتصار 🪰💥
-        </p>
+        <p>الهورينغ استغل الفوضى، وطار بالانتصار 🪰💥</p>
       </div>
       <div dir="rtl" class="start box">
-      <h2>هل أنت مستعد للتكبيس !</h2>
-        <input id="nameInput" type="text" name="mokabiss" required placeholder="أدخل إسمك بالإنجليزي" pattern="[a-z]{4,10}">
-      <span class="contactForChangeName">ملاحظة: لايمكنك تغيير الاسم لاحقا</span>
-      <button id="start">إبدأ</button>
-      <button type="button" id="abd">لا</button>
-    </div>
-    <span class="alert" dir="rtl"></span>
+        <h2>هل أنت مستعد للتكبيس !</h2>
+        <input
+          id="nameInput"
+          type="text"
+          name="mokabiss"
+          required
+          placeholder="أدخل إسمك بالإنجليزي"
+          pattern="[a-z]{4,10}"
+        />
+        <span class="contactForChangeName"
+          >ملاحظة: لايمكنك تغيير الاسم لاحقا</span
+        >
+        <button id="start">إبدأ</button>
+        <button type="button" id="abd">لا</button>
+      </div>
+      <span class="alert" dir="rtl"></span>
     </main>
     <footer class="footer_container">
-      <p>&copy; <a href="https://github.com/chakhabit/kabisni">Alaa MEKIBES</a></p>
+      <p>
+        &copy; <a href="https://github.com/chakhabit/kabisni">Alaa MEKIBES</a>
+      </p>
     </footer>
     <script src="main.js"></script>
   </body>
