@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
-    <title>please click me</title>
+    <title>كبسني | Kabisni</title>
   </head>
   <body>
     <header class="header_container">
@@ -21,17 +21,19 @@
     </header>
     <main class="main_container">
       <div id="circle"></div>
-      <div dir="rtl" class="looser">
+      <div dir="rtl" class="looser box">
         <h2><span>🪳</span> لقد فشلت في التكبيس !</h2>
         <p>الهورينغ استغل الفوضى، وطار بالانتصار 🪰💥
         </p>
-    </div>
-    <div dir="rtl" class="start">
+      </div>
+      <div dir="rtl" class="start box">
       <h2>هل أنت مستعد للتكبيس !</h2>
+        <input id="nameInput" type="text" name="mokabiss" required placeholder="أدخل إسمك بالإنجليزي" pattern="[a-z]{4,10}">
+      <span class="contactForChangeName">ملاحظة: لايمكنك تغيير الاسم لاحقا</span>
       <button id="start">إبدأ</button>
-      <button id="abd">لا</button>
+      <button type="button" id="abd">لا</button>
     </div>
-    <span class="alert" dir="rtl">إنتبه من الهورينغ... تخلص منه !!</span>
+    <span class="alert" dir="rtl"></span>
     </main>
     <footer class="footer_container">
       <p>&copy; <a href="https://github.com/chakhabit/kabisni">Alaa MEKIBES</a></p>

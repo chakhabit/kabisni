@@ -23,7 +23,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100dvh;
   background-image: url(assets/img/bg.png);
 }
 
@@ -69,6 +69,21 @@ h6 {
 #__next {
   isolation: isolate;
 }
+/* Framework*/
+.box {
+  max-width: 550px;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 20px;
+  position: relative;
+  z-index: 5;
+  padding: 1rem;
+  margin: auto;
+  text-align: center;
+}
 .header_container {
   padding: 10px 3rem;
   height: 72px;
@@ -92,6 +107,7 @@ h6 {
     justify-content: end;
     span {
       font-weight: bold;
+      user-select: none;
     }
   }
 }
@@ -109,10 +125,10 @@ h6 {
   width: 50px;
   height: 50px;
   cursor: pointer;
+  user-select: none;
   transition: left ease 0.2s, top ease 0.2s, background-color ease 0.5s,
     scale 0.2s;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
-    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
   &:hover {
     scale: 1.03;
   }
@@ -121,9 +137,10 @@ h6 {
   background-color: rgba(41, 70, 187, 0.216);
   margin-bottom: auto;
   padding: 1rem;
+  user-select: none;
   p {
     font-family: "funny", sans-serif;
-    display: block;
+    display: inline-block;
     font-size: 1.05rem;
     color: rgb(85, 26, 139);
     &:hover {
@@ -141,21 +158,9 @@ h6 {
 }
 .looser {
   background-color: #3a0ca3;
-  max-width: 550px;
-  height: 500px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 20px;
-  position: relative;
-  z-index: 5;
-  padding: 1rem;
-  margin: auto;
   box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
   animation: fade-in 2s;
   display: none;
-  text-align: center;
   h2 {
     font-size: 2.5rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -173,61 +178,84 @@ h6 {
   }
 }
 .start {
-    background-color: #5da30c;
-  max-width: 550px;
-  height: 500px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 20px;
-  position: relative;
-  z-index: 5;
-  padding: 1rem;
-  margin: auto;
+  background-color: #F15946;
   box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
   color: #e2fdff;
-  animation: fade-in 2s;
+  /* animation: fade-in 2s; */
   h2 {
     font-size: 2.5rem;
     text-align: center;
     margin-bottom: 2rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   }
+  input {
+    margin-bottom: 1rem;
+    outline: none;
+    border: 1px solid transparent;
+    background-color: transparent;
+    text-align: center;
+    border-radius: 10px;
+    padding: 10px;
+    color: #e2fdff;
+    &::placeholder {
+      color: #e2fdff;
+      font-weight: 500;
+      opacity: 0.7;
+    }
+    &:focus {
+      border-color: #ccc;
+    }
+  }
+  .contactForChangeName {
+    margin-bottom: 20px;
+    background-color: #003554;
+    padding: 1rem;
+    border-radius: 20px;
+    a {
+      color: #53B3CB;
+      text-decoration: none;
+      font-weight: 900;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
   button {
     font-size: 1.5rem;
     text-shadow: 1px 1px 3px #888;
     display: block;
-    background-color: #3a0ca3;
+    background-color: #006494;
     color: #e2fdff;
     outline: none;
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
     border-radius: 30px;
     cursor: pointer;
-    transition: .2s;
+    transition: 0.2s;
     user-select: none;
     &:hover {
-    color: #ffd700;
-        opacity: .8;
+      color: #ffd700;
+      opacity: 0.8;
     }
     &:first-of-type {
-        width: 60%;
+      width: 60%;
     }
     &:last-of-type {
-        width: 40%;
+      width: 40%;
     }
   }
 }
 .alert {
-    position: absolute;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 10px;
-    left: 50%;
-    bottom: 1rem;
-    transform: translateX(-50%);
-    animation: fade-in 1s linear;
-    display: none;
+  position: absolute;
+  z-index: 8;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  animation: fade-in 1s linear;
+  display: none;
+  pointer-events: none;
 }
 @keyframes bug {
   0% {
@@ -255,10 +283,10 @@ h6 {
   }
 }
 @keyframes fade-out {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
+  0% {
+    opacity: 1;
   }
+  100% {
+    opacity: 0;
+  }
+}
