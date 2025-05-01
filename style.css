@@ -25,6 +25,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   background-image: url(assets/img/bg.png);
+  overflow: hidden;
 }
 
 img,
@@ -288,5 +289,23 @@ h6 {
   }
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  25% {
+    transform: rotateX(90deg) rotateY(20deg) rotateZ(10deg);
+  }
+  50% {
+    transform: rotateX(180deg) rotateY(0deg) rotateZ(-20deg);
+  }
+  75% {
+    transform: rotateX(270deg) rotateY(-20deg) rotateZ(10deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(0deg) rotateZ(0deg);
   }
 }

@@ -25,6 +25,7 @@ document.querySelector("#abd").addEventListener("click", (e) => {
 // click before start
 let cheeter = (_) => {
   AlertN("لا تحاول الغش أيها الوغد");
+  document.body.style.animation = "rotate 2s ease";
 };
 document
   .getElementById("circle")
@@ -176,7 +177,7 @@ document.querySelector("#start").addEventListener("click", (e) => {
   -moz-user-drag: none;
   -o-user-drag: none; width: 50px; left: calc(${Math.abs(
       randX
-    )}% - 50px); top: calc(${Math.abs(randY)}% - 50px); cursor: pointer`;
+    )}% - 50px); top: calc(${Math.abs(randY)}% - 50px); cursor: pointer; animation: bug linear 2s infinite`;
     yippyAudio.play();
     function yippyEatScore() {
       if (document.contains(bug)) {
