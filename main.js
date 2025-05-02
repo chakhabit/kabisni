@@ -71,8 +71,7 @@ thresholds.forEach((point) => {
 document.querySelectorAll(".Unlocked").forEach(el => {
   el.addEventListener("click", (e) => {
   document.querySelector(".player").classList.remove(document.querySelector(".player").classList[2]);
-  document.querySelector(".player").classList.add(e.currentTarget.firstElementChild.classList[0]);
-    
+  document.querySelector(".player").classList.add(e.currentTarget.lastElementChild.classList[0]);
   });
 });
 
