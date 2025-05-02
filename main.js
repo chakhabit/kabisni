@@ -1,3 +1,5 @@
+document.querySelector(".player").classList.remove(document.querySelector(".player").classList[2]);
+document.querySelector(".player").classList.add(localStorage.getItem("shape") || "circle");
 // Alert
 function AlertN(msg) {
   let TheAlert = document.querySelector(".alert");
@@ -72,6 +74,7 @@ document.querySelectorAll(".Unlocked").forEach(el => {
   el.addEventListener("click", (e) => {
   document.querySelector(".player").classList.remove(document.querySelector(".player").classList[2]);
   document.querySelector(".player").classList.add(e.currentTarget.lastElementChild.classList[0]);
+  localStorage.setItem("shape", e.currentTarget.lastElementChild.classList[0]);
   });
 });
 
