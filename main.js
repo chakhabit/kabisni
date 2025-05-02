@@ -13,6 +13,77 @@ function AlertN(msg) {
     }, 1000);
   }, 5000);
 }
+// store
+let skins = ["triangleUp", "triangleDown", "star-six", "x-shape", "heart", "infinity", "pacman"];
+let price = 100;
+let priceName = "p" + price;
+for (let i = 0; i < skins.length; i += 2) {
+  let row = document.createElement("div");
+  row.classList.add("row");
+  document.getElementById("menu").after(row);
+
+  // First box
+  let box1 = document.createElement("div");
+  box1.classList.add("box", priceName);
+  let shapeBox1 = document.createElement("div");
+  shapeBox1.classList.add(skins[i], "storeBox", "shape");
+  let span = document.createElement("span");
+  span.style.cssText = "position: relative;top: 57%;font-weight: 500;color: #3a0ca3;"
+  span.textContent =  price + " زمبيط ";
+  span.setAttribute("dir", "rtl");
+  box1.appendChild(span);
+  price = price + 200;
+  priceName = "p" + price;
+  box1.appendChild(shapeBox1);
+  row.appendChild(box1);
+
+  // Second box (only if there's a next skin)
+  if (i + 1 < skins.length) {
+    let box2 = document.createElement("div");
+    box2.classList.add("box", priceName);
+    let shapeBox2 = document.createElement("div");
+    shapeBox2.classList.add(skins[i + 1], "storeBox", "shape");
+    let span = document.createElement("span");
+    span.style.cssText = "position: relative;top: 57%;font-weight: 500;color: #3a0ca3;"
+    span.textContent =  price + " زمبيط ";
+    span.setAttribute("dir", "rtl");
+    box2.appendChild(span);
+  price = price + 200;
+  priceName = "p" + price;
+    box2.appendChild(shapeBox2);
+    row.appendChild(box2);
+  }
+}
+document.querySelector("#pointStore").textContent = localStorage.getItem("storePoint") || 0;
+const storePoint = parseInt(localStorage.getItem("storePoint") || "0", 10);
+const thresholds = [100, 300, 500, 800, 1000]; 
+
+thresholds.forEach((point) => {
+  if (storePoint >= point) {
+    document.querySelectorAll(`.row .p${point}`).forEach((el) => {
+      el.style.pointerEvents = "all";
+      el.classList.add("no-before");
+      el.classList.add("Unlocked");
+    });
+  }
+});
+
+document.querySelectorAll(".Unlocked").forEach(el => {
+  el.addEventListener("click", (e) => {
+  document.querySelector(".player").classList.remove(document.querySelector(".player").classList[2]);
+  document.querySelector(".player").classList.add(e.currentTarget.firstElementChild.classList[0]);
+    
+  });
+});
+
+document.querySelector(".store_icon button").addEventListener("click", () => {
+  document.querySelector(".main_container .store").style.display = "block";
+
+  document.querySelector(".main_container .store .close").addEventListener("click", (_) => {
+    document.querySelector(".main_container .store").style.display = "none";
+  })
+})
+
 // User click No
 document.querySelector("#abd").addEventListener("click", (e) => {
   let abdi = document.createElement("p");
@@ -28,7 +99,7 @@ let cheeter = (_) => {
   document.body.style.animation = "rotate 2s ease";
 };
 document
-  .getElementById("circle")
+  .querySelector(".player")
   .addEventListener("click", cheeter, { once: true });
 // Name check
 let inputValue = document.querySelector("input");
@@ -43,7 +114,7 @@ if (userName) {
 let scoreD = document.querySelector(".score span");
 scoreD.textContent = Math.max(localStorage.getItem("score"), 0);
 document.querySelector("#start").addEventListener("click", (e) => {
-  document.getElementById("circle").removeEventListener("click", cheeter);
+  document.querySelector(".player").removeEventListener("click", cheeter);
   // Name validation
   let nameValid = false;
   const niggaWord = /n[a-z]*i[a-z]*g[a-z]*g[a-z]*a[a-z]*/;
@@ -76,19 +147,19 @@ document.querySelector("#start").addEventListener("click", (e) => {
   }, 999);
 
   // Level 1
-  let circle = document.getElementById("circle");
-  const chillColors = [
-    "#A8D8EA",
-    "#76C4D4",
-    "#4A89DC",
-    "#88C9A1",
-    "#6DBCB3",
-    "#F5C3C2",
-    "#D4B8D9",
-    "#E8D5B5",
-    "#D9BF77",
-    "#E0E0E0",
-  ];
+  let circle = document.querySelector(".player");
+  // const chillColors = [
+  //   "#A8D8EA",
+  //   "#76C4D4",
+  //   "#4A89DC",
+  //   "#88C9A1",
+  //   "#6DBCB3",
+  //   "#F5C3C2",
+  //   "#D4B8D9",
+  //   "#E8D5B5",
+  //   "#D9BF77",
+  //   "#E0E0E0",
+  // ];
   let score = 0;
   localStorage.setItem(
     "score",
@@ -96,12 +167,22 @@ document.querySelector("#start").addEventListener("click", (e) => {
   );
   let vittese = 2000;
   // let vittese = 200;
+  let preScore = score;
   let scoreCount = setInterval(() => {
     scoreD.textContent = score;
+    document.querySelector("#pointStore").textContent = localStorage.getItem("storePoint") || 0;
     localStorage.setItem(
       "score",
       Math.max(score, localStorage.getItem("score"), 0)
     );
+    
+    if(score !== preScore) {
+      const currentScore = parseInt(localStorage.getItem("storePoint")) || 0;
+      const pointChange = score - preScore;
+      localStorage.setItem("storePoint", currentScore + pointChange);
+      preScore = score;
+    }
+    
   }, 500);
   let loop = setInterval(randomly, vittese);
   let count = 1;
@@ -117,9 +198,9 @@ document.querySelector("#start").addEventListener("click", (e) => {
     circle.style.cssText = `left: calc(${Math.abs(
       randX
     )}% - 50px); top: calc(${Math.abs(randY)}% - 50px)`;
-    circle.style.backgroundColor = `${chillColors[i]}`;
+    // circle.style.backgroundColor = `${chillColors[i]}`;
     if (count % 3 === 0 && vittese > 100) {
-      i = (i + 1) % chillColors.length;
+      // i = (i + 1) % chillColors.length;
       clearInterval(loop);
       vittese = Math.max(vittese - 100, 100);
       loop = setInterval(randomly, vittese);
@@ -139,7 +220,7 @@ document.querySelector("#start").addEventListener("click", (e) => {
 
     circle.style.cssText = `left: calc(${Math.abs(randX)}% - 50px); 
                            top: calc(${Math.abs(randY)}% - 50px)`;
-    circle.style.backgroundColor = chillColors[i];
+    // circle.style.backgroundColor = chillColors[i];
   }
   let gameLoop;
   function startLv2() {

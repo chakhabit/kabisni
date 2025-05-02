@@ -35,18 +35,34 @@
     <title>كبسني | Kabisni</title>
   </head>
   <body>
+    <!-- Start Header -->
     <header class="header_container">
+      <div class="score">
+        <span></span>
+      </div>
       <div class="logo">
         <a href="" aria-label="website logo"
           ><img src="assets/img/كبسني.png" alt="كبسني"
         /></a>
       </div>
-      <div class="score">
-        <span></span>
+      <div class="store_icon">
+        <button>Store</button>
       </div>
     </header>
+    <!-- Start Main -->
     <main class="main_container">
-      <div id="circle"></div>
+      <div class="store">
+        <span class="close" title="close">X</span>
+        <div class="myPoints">
+          <p>My points: <span id="pointStore">50</span></p>
+        </div>
+        <ul id="menu" class="menu">
+          <li><button>skin</button></li>
+          <!-- <li><button>border</button></li>
+          <li><button>points</button></li> -->
+        </ul>
+      </div>
+      <div class="shape player circle"></div>
       <div dir="rtl" class="looser box">
         <h2><span>🪳</span> لقد فشلت في التكبيس !</h2>
         <p>الهورينغ استغل الفوضى، وطار بالانتصار 🪰💥</p>
