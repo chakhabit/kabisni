@@ -145,7 +145,7 @@ document.querySelector("#start").addEventListener("click", (e) => {
   // Name validation
   let nameValid = false;
   const niggaWord = /n[a-z]*i[a-z]*g[a-z]*g[a-z]*a[a-z]*/;
-  const speacilChar = /[§!@#$%^&*()_+=\[\]{};':"\\|<>\/?]/;
+  const speacilChar = /[§!@#\.$%^&*()_+=\[\]{};':"\\|<>\/?]/;
   const numbers = /[0-9]+/;
   if (inputValue.value.length >= 4 && inputValue.value.length <= 10) {
     nameValid = true;
