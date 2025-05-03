@@ -1,5 +1,6 @@
 :root {
   --bg-shape: rgb(41, 70, 187);
+  --c-red: #ee4b2b;
 }
 *,
 *::before,
@@ -13,7 +14,7 @@
   box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-var(--c-red)uced-motion: no-preference) {
   html {
     interpolate-size: allow-keywords;
   }
@@ -89,7 +90,7 @@ h6 {
   text-align: center;
 }
 .circle {
-  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+  box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
   background-color: var(--bg-shape);
   border-radius: 50%;
 }
@@ -126,7 +127,7 @@ h6 {
   top: 50%;
   left: 0;
   width: 100%;
-  height: 4px; 
+  height: 4px;
   background-color: var(--bg-shape);
 }
 
@@ -141,12 +142,12 @@ h6 {
 .heart:after {
   position: absolute;
   content: "";
-  left: 25px;  
+  left: 25px;
   top: 0;
-  width: 25px;  
+  width: 25px;
   height: 40px;
   background: var(--bg-shape);
-  border-radius: 25px 25px 0 0; 
+  border-radius: 25px 25px 0 0;
   transform: rotate(-45deg);
   transform-origin: 0 100%;
 }
@@ -196,37 +197,21 @@ h6 {
   border-bottom-right-radius: 30px;
 }
 .space-invader {
-  box-shadow: 0 0 0 1em red,
-  0 1em 0 1em red,
-  -2.5em 1.5em 0 .5em red,
-  2.5em 1.5em 0 .5em red,
-  -3em -3em 0 0 red,
-  3em -3em 0 0 red,
-  -2em -2em 0 0 red,
-  2em -2em 0 0 red,
-  -3em -1em 0 0 red,
-  -2em -1em 0 0 red,
-  2em -1em 0 0 red,
-  3em -1em 0 0 red,
-  -4em 0 0 0 red,
-  -3em 0 0 0 red,
-  3em 0 0 0 red,
-  4em 0 0 0 red,
-  -5em 1em 0 0 red,
-  -4em 1em 0 0 red,
-  4em 1em 0 0 red,
-  5em 1em 0 0 red,
-  -5em 2em 0 0 red,
-  5em 2em 0 0 red,
-  -5em 3em 0 0 red,
-  -3em 3em 0 0 red,
-  3em 3em 0 0 red,
-  5em 3em 0 0 red,
-  -2em 4em 0 0 red,
-  -1em 4em 0 0 red,
-  1em 4em 0 0 red,
-  2em 4em 0 0 red;
-  background: red;
+  box-shadow: 0 0 0 1em var(--c-red), 0 1em 0 1em var(--c-red),
+    -2.5em 1.5em 0 0.5em var(--c-red), 2.5em 1.5em 0 0.5em var(--c-red),
+    -3em -3em 0 0 var(--c-red), 3em -3em 0 0 var(--c-red),
+    -2em -2em 0 0 var(--c-red), 2em -2em 0 0 var(--c-red),
+    -3em -1em 0 0 var(--c-red), -2em -1em 0 0 var(--c-red),
+    2em -1em 0 0 var(--c-red), 3em -1em 0 0 var(--c-red),
+    -4em 0 0 0 var(--c-red), -3em 0 0 0 var(--c-red), 3em 0 0 0 var(--c-red),
+    4em 0 0 0 var(--c-red), -5em 1em 0 0 var(--c-red), -4em 1em 0 0 var(--c-red),
+    4em 1em 0 0 var(--c-red), 5em 1em 0 0 var(--c-red),
+    -5em 2em 0 0 var(--c-red), 5em 2em 0 0 var(--c-red),
+    -5em 3em 0 0 var(--c-red), -3em 3em 0 0 var(--c-red),
+    3em 3em 0 0 var(--c-red), 5em 3em 0 0 var(--c-red),
+    -2em 4em 0 0 var(--c-red), -1em 4em 0 0 var(--c-red),
+    1em 4em 0 0 var(--c-red), 2em 4em 0 0 var(--c-red);
+  background: var(--c-red);
   width: 1em;
   height: 1em;
   overflow: hidden;
@@ -241,18 +226,18 @@ h6 {
   justify-content: space-between;
   align-items: center;
   .store_icon button {
-      background-color: #003554;
-      color: #fff;
-      padding: 2px 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      border: none;
-      transition: .2s;
-      user-select: none;
-      &:hover {
-        background-color: #53B3CB;
-      }
+    background-color: #ffde02;
+    color: #003554;
+    padding: 2px 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+    user-select: none;
+    &:hover {
+      background-color: #53b3cb;
+    }
   }
   .logo {
     flex: 1;
@@ -274,6 +259,7 @@ h6 {
     }
   }
 }
+/* Start main */
 .main_container {
   position: relative;
   padding: 1rem;
@@ -282,29 +268,53 @@ h6 {
 .main_container .store {
   position: absolute;
   background-color: #fff;
-  top:0;
+  top: 0;
   right: 0;
   z-index: 55;
   width: 300px;
   height: 100%;
   padding: 8px;
   display: none;
-  transition: .2s;
-  animation: fade-in .1s linear;
-  .close {
-    display: block;
-    font-size: 1.5rem;
-    text-align: end;
-    padding: 2px 10px;
-    color: red;
-    cursor: pointer;
-    user-select: none;
+  transition: 0.2s;
+  animation: fade-in 0.1s linear;
+  overflow-y: auto;
+  .close_container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px 10px;
+    .close {
+      text-align: end;
+      padding: 2px 10px;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid;
+      color: var(--c-red);
+      font-size: 20px;
+      transition: 0.2s;
+      &:hover {
+        background-color: var(--c-red);
+        color: #fff;
+      }
+    }
   }
   .myPoints {
     p {
-      font-family: "funny", sans-serif;
-    user-select: none;
-
+      user-select: none;
+      text-align: end;
+      margin-top: 1rem;
+      padding: 1rem 5px;
+      border-block: 1px solid #ccc;
+      white-space: pre;
+    }
+    .pointStore {
+      display: block;
+      margin-right: 1rem;
     }
   }
   .menu {
@@ -313,7 +323,7 @@ h6 {
     margin-bottom: 10px;
     li {
       display: inline-block;
-    user-select: none;
+      user-select: none;
 
       button {
         background-color: #003554;
@@ -323,9 +333,9 @@ h6 {
         border-radius: 5px;
         cursor: pointer;
         border: none;
-        transition: .2s;
+        transition: 0.2s;
         &:hover {
-          background-color: #53B3CB;
+          background-color: #53b3cb;
         }
       }
       &:not(:last-child) {
@@ -349,7 +359,7 @@ h6 {
       position: relative;
       pointer-events: none;
       &:before {
-        content: '*';
+        content: "*";
         position: absolute;
         width: 100%;
         height: 100%;
@@ -416,7 +426,7 @@ h6 {
   }
 }
 .start {
-  background-color: #F15946;
+  background-color: #f15946;
   box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
   color: #e2fdff;
   /* animation: fade-in 2s; */
@@ -450,7 +460,7 @@ h6 {
     padding: 1rem;
     border-radius: 20px;
     a {
-      color: #53B3CB;
+      color: #53b3cb;
       text-decoration: none;
       font-weight: 900;
       &:hover {
@@ -548,7 +558,6 @@ h6 {
   }
 }
 
-
 /* Shapes */
 .shape {
   position: absolute;
@@ -558,7 +567,8 @@ h6 {
   height: 50px;
   cursor: pointer;
   user-select: none;
-  transition: left ease 0.2s, top ease 0.2s, background-color ease 0.5s, scale 0.2s;
+  transition: left ease 0.2s, top ease 0.2s, background-color ease 0.5s,
+    scale 0.2s;
   &:hover {
     scale: 1.03;
   }

@@ -15,68 +15,92 @@ function AlertN(msg) {
     }, 1000);
   }, 5000);
 }
-// store
-let skins = ["triangleUp", "triangleDown", "star-six", "x-shape", "heart", "infinity", "pacman"];
+function store() {
+  // Store logic
+const skins = ["triangleUp", "triangleDown", "star-six", "x-shape", "heart", "infinity", "pacman"];
 let price = 100;
-let priceName = "p" + price;
+const menu = document.getElementById("menu");
+
+// Helper function to create a store box
+function createBox(skin, price) {
+  const box = document.createElement("div");
+  box.classList.add("box", `p${price}`);
+
+  const shape = document.createElement("div");
+  shape.classList.add(skin, "storeBox", "shape");
+
+  const priceLabel = document.createElement("span");
+  priceLabel.style.cssText = `
+    position: relative;
+    top: 57%;
+    font-weight: 500;
+    color: #3a0ca3;
+    font-size: 13px;
+  `;
+  priceLabel.textContent = `${price} زمبيط`;
+  priceLabel.setAttribute("dir", "rtl");
+
+  box.appendChild(priceLabel);
+  box.appendChild(shape);
+  return box;
+}
+
+// Generate store rows
 for (let i = 0; i < skins.length; i += 2) {
-  let row = document.createElement("div");
+  const row = document.createElement("div");
   row.classList.add("row");
-  document.getElementById("menu").after(row);
+  menu.after(row);
 
-  // First box
-  let box1 = document.createElement("div");
-  box1.classList.add("box", priceName);
-  let shapeBox1 = document.createElement("div");
-  shapeBox1.classList.add(skins[i], "storeBox", "shape");
-  let span = document.createElement("span");
-  span.style.cssText = "position: relative;top: 57%;font-weight: 500;color: #3a0ca3;"
-  span.textContent =  price + " زمبيط ";
-  span.setAttribute("dir", "rtl");
-  box1.appendChild(span);
-  price = price + 200;
-  priceName = "p" + price;
-  box1.appendChild(shapeBox1);
-  row.appendChild(box1);
+  // First skin box
+  row.appendChild(createBox(skins[i], price));
+  price += 200;
 
-  // Second box (only if there's a next skin)
+  // Second skin box (if exists)
   if (i + 1 < skins.length) {
-    let box2 = document.createElement("div");
-    box2.classList.add("box", priceName);
-    let shapeBox2 = document.createElement("div");
-    shapeBox2.classList.add(skins[i + 1], "storeBox", "shape");
-    let span = document.createElement("span");
-    span.style.cssText = "position: relative;top: 57%;font-weight: 500;color: #3a0ca3;"
-    span.textContent =  price + " زمبيط ";
-    span.setAttribute("dir", "rtl");
-    box2.appendChild(span);
-  price = price + 200;
-  priceName = "p" + price;
-    box2.appendChild(shapeBox2);
-    row.appendChild(box2);
+    row.appendChild(createBox(skins[i + 1], price));
+    price += 200;
   }
 }
-document.querySelector("#pointStore").textContent = localStorage.getItem("storePoint") || 0;
-const storePoint = parseInt(localStorage.getItem("storePoint") || "0", 10);
-const thresholds = [100, 300, 500, 800, 1000]; 
 
-thresholds.forEach((point) => {
-  if (storePoint >= point) {
-    document.querySelectorAll(`.row .p${point}`).forEach((el) => {
-      el.style.pointerEvents = "all";
-      el.classList.add("no-before");
-      el.classList.add("Unlocked");
-    });
-  }
-});
 
-document.querySelectorAll(".Unlocked").forEach(el => {
-  el.addEventListener("click", (e) => {
-  document.querySelector(".player").classList.remove(document.querySelector(".player").classList[2]);
-  document.querySelector(".player").classList.add(e.currentTarget.lastElementChild.classList[0]);
-  localStorage.setItem("shape", e.currentTarget.lastElementChild.classList[0]);
+function pointStoreVerification() {
+  document.querySelector("#pointStore").textContent = localStorage.getItem("storePoint") || 0;
+  const storePoint = parseInt(localStorage.getItem("storePoint") || "0", 10);
+  const thresholds = [100, 300, 500, 700, 900, 1100, 1300]; 
+  thresholds.forEach((point) => {
+    if (storePoint >= point) {
+      document.querySelectorAll(`.row .p${point}`).forEach((el) => {
+        el.style.pointerEvents = "all";
+        el.classList.add("no-before");
+        el.classList.add("Unlocked");
+      });
+    }
   });
-});
+}
+setInterval(() => {
+  pointStoreVerification();
+}, 500);
+pointStoreVerification()
+
+  document.querySelectorAll(".Unlocked").forEach(el => {
+    el.addEventListener("click", (e) => {
+      // Reset all backgrounds
+      document.querySelectorAll(".Unlocked").forEach(box => {
+        box.style.backgroundColor = "";
+      });
+  
+      // Apply to clicked box (with rgba for better support)
+      e.currentTarget.style.backgroundColor = "rgba(255, 215, 0, 0.23)";
+  
+      // Update player class
+      const player = document.querySelector(".player");
+      player.classList.remove(player.classList[2]);
+      player.classList.add(e.currentTarget.lastElementChild.classList[0]);
+  
+      // Save to localStorage
+      localStorage.setItem("shape", e.currentTarget.lastElementChild.classList[0]);
+    });
+  });
 
 document.querySelector(".store_icon button").addEventListener("click", () => {
   document.querySelector(".main_container .store").style.display = "block";
@@ -85,7 +109,8 @@ document.querySelector(".store_icon button").addEventListener("click", () => {
     document.querySelector(".main_container .store").style.display = "none";
   })
 })
-
+}
+store();
 // User click No
 document.querySelector("#abd").addEventListener("click", (e) => {
   let abdi = document.createElement("p");
