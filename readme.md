@@ -44,7 +44,6 @@
 
 ## 👨‍💻 المطوّر:  
 **Alaa MEKIBES**  
-🔗 [صفحة GitHub](https://github.com/chakhabit)  
 
 ---
 
