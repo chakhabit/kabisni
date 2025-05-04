@@ -19,10 +19,7 @@
     />
     <meta property="og:url" content="https://chakhabit.github.io/kabisni" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:image"
-      content="https://i.ibb.co/Swz34JQK/image.png"
-    />
+    <meta property="og:image" content="https://i.ibb.co/Swz34JQK/image.png" />
     <link href="https://fonts.cdnfonts.com/css/funny" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -30,7 +27,11 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap"
       rel="stylesheet"
     />
-    <link rel="shortcut icon" href="assets/img/favicon-32x32.png" type="image/x-icon">
+    <link
+      rel="shortcut icon"
+      href="assets/img/favicon-32x32.png"
+      type="image/x-icon"
+    />
     <link rel="stylesheet" href="style.css" />
     <title>كبسني | Kabisni</title>
   </head>
@@ -53,10 +54,10 @@
     <main class="main_container">
       <div class="store">
         <div class="close_container">
-        <span class="close" title="close">X</span>
+          <span class="close" title="close">X</span>
         </div>
         <div class="myPoints">
-          <p>رصيدك:  <span id="pointStore"></span> زمبيط</p>
+          <p>رصيدك: <span id="pointStore"></span> زمبيط</p>
         </div>
         <ul id="menu" class="menu">
           <li><button>skin</button></li>
@@ -69,7 +70,8 @@
         <h2><span>🪳</span> لقد فشلت في التكبيس !</h2>
         <p>الهورينغ استغل الفوضى، وطار بالانتصار 🪰💥</p>
       </div>
-      <div dir="rtl" class="start box">
+
+      <div dir="rtl" id="start_menu" class="start box">
         <h2>هل أنت مستعد للتكبيس !</h2>
         <input
           id="nameInput"
@@ -82,16 +84,39 @@
         <span class="contactForChangeName"
           >ملاحظة: لايمكنك تغيير الاسم لاحقا</span
         >
-        <button id="start">إبدأ</button>
+        <div class="buttons">
+          <button id="start">إبدأ</button>
         <button type="button" id="abd">لا</button>
+        <button id="bestKabasin">أفضل الكباسين</button>
+        </div>
       </div>
+
+      <div class="leaderBoarder box">
+        <div class="close_container">
+          <button class="close">X</button>
+        </div>
+        <ul class="others">
+        </ul>
+        <div class="leader">
+          <h3>أفضل مكبس</h3>
+          <img src="assets/img/leader.png" alt="leader">
+          <h4 class="name"></h4>
+          <span class="point"></span>
+        </div>
+      </div>
+
       <span class="alert" dir="rtl"></span>
     </main>
+    <!-- Start Fotter -->
     <footer class="footer_container">
       <p>
         &copy; <a href="https://github.com/chakhabit/kabisni">Alaa MEKIBES</a>
       </p>
+      <button id="save">حفظ التقدم</button>
     </footer>
-    <script src="main.js"></script>
+    <script src="
+https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js
+"></script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>

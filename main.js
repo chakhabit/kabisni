@@ -1,3 +1,20 @@
+// database ////////////////////////////////////
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+async function submitBestScore(mokabiss, newScore) {
+  const { data: existing } = await client
+    .from('mokabisoun')
+    .select('*')
+    .eq('mokabiss', mokabiss)
+    .single();
+
+  if (!existing) {
+    await client.from('mokabisoun').insert([{ mokabiss, bestScore: newScore }]);
+  } else if (newScore > existing.bestScore) {
+    await client.from('mokabisoun').update({ bestScore: newScore }).eq('mokabiss', mokabiss);
+  }
+}
+////////////////////////////////////////////
 function AlertN(msg) {
   let TheAlert = document.querySelector(".alert");
   const alertN = document.createElement("audio");
@@ -12,9 +29,127 @@ function AlertN(msg) {
     }, 1000);
   }, 5000);
 }
+// best kabasin
+document.querySelector("#bestKabasin").addEventListener("click", e => {
+  const startMenu = document.querySelector("#start_menu");
+  const leaderBoard = document.querySelector(".leaderBoarder"); 
+  
+  startMenu.style.animation = "fade-out 1s";
+  setTimeout(() => {
+    startMenu.style.display = "none";
+    leaderBoard.style.display = "flex";
+    leaderBoard.style.animation = "fade-in 1s"; 
+  }, 1000);
+
+  async function getTopPlayer() {
+    const { data, error } = await client
+      .from('mokabisoun')
+      .select('*')
+      .order('bestScore', { ascending: false })
+      .limit(1);
+  
+    if (error) {
+      console.error("Error fetching top score:", error);
+      return {msg: "error"};
+    }
+  
+    if (data.length > 0) {
+      const topPlayer = data[0];
+      console.log(`🏆 Top player: ${topPlayer.mokabiss}, Score: ${topPlayer.bestScore}`);
+      return {name: topPlayer.mokabiss, score: topPlayer.bestScore};
+    } else {
+      console.log("No scores found yet.");
+      return {msg: "none"};
+    }
+}
+
+(async function() {
+  let bestPlayerOb = await getTopPlayer();
+  if(!bestPlayerOb.msg) {
+    document.querySelector(".leaderBoarder .leader .name").textContent = bestPlayerOb.name;
+    document.querySelector(".leaderBoarder .leader .point").textContent = bestPlayerOb.score;
+  }
+  else {
+    document.querySelector(".leaderBoarder .leader .name").textContent = "لايوجد لاعب بعد";
+    document.querySelector(".leaderBoarder .leader .point").textContent = "لايوجد لاعب بعد";
+  }
+})();
+
+
+async function getOtherPlayer() {
+  const { data, error } = await client
+    .from('mokabisoun')
+    .select('*')
+    .order('bestScore', { ascending: false })
+    .range(1, 9);
+
+  if (error) {
+    console.error("Error fetching top score:", error);
+    return {msg: "error"};
+  }
+
+  if (data.length > 0) {
+    const topPlayer = data[0];
+    console.log(`🏆 player: ${topPlayer.mokabiss}, Score: ${topPlayer.bestScore}`);
+    return data.map(player => ({name: player.mokabiss, score: player.bestScore}));
+  } else {
+    console.log("No scores found yet.");
+    return {msg: "none"};
+  }
+}
+
+(async function() {
+let playerOb = await getOtherPlayer();
+
+if(!playerOb.msg) {
+  playerOb.forEach(e => {
+    const listItem = document.createElement('li');
+
+const textDiv = document.createElement('div');
+textDiv.className = 'text';
+
+const img = document.createElement('img');
+img.src = 'assets/img/others.png';
+img.alt = 'others';
+
+const nameSpan = document.createElement('span');
+nameSpan.className = 'name';
+nameSpan.textContent = e.name;
+
+const pointSpan = document.createElement('span');
+pointSpan.className = 'point';
+pointSpan.textContent = e.score;
+
+
+textDiv.appendChild(img);
+textDiv.appendChild(nameSpan);
+listItem.appendChild(textDiv);
+listItem.appendChild(pointSpan);
+document.querySelector(".others").append(listItem);
+console.log(playerOb);
+  })
+}
+else {
+  document.querySelector(".leaderBoarder .others .text .name").textContent = "لايوجد لاعب بعد";
+  document.querySelector(".leaderBoarder .others .point").textContent = "لايوجد لاعب بعد";
+}
+})();
 
 
 
+});
+document.querySelector(".leaderBoarder .close_container").addEventListener("click", () => {
+  const leaderBoard = document.querySelector(".leaderBoarder");
+  const startMenu = document.querySelector("#start_menu");
+  
+  leaderBoard.style.animation = "fade-out 1s";
+  setTimeout(() => {
+    leaderBoard.style.display = "none";
+    startMenu.style.display = "flex";
+    startMenu.style.animation = "fade-in 1s"; // Add fade-in animation
+  }, 1000);
+});
+// Store
 function store() {
   const skins = [
     "circle",
@@ -169,40 +304,72 @@ const userName = localStorage.getItem("userName");
 if (userName) {
   inputValue.value = userName;
   inputValue.disabled = true;
+  inputValue.classList.add("fixed");
   document.getElementsByClassName("contactForChangeName")[0].innerHTML =
-    'لا يمكنك تعديل الاسم مجددا.  <a href="mailto:mekibes.al@gmail.com">راسلنا</a>';
-}
+    'لا يمكنك تعديل الاسم مجددا.  <a href="#">راسلنا</a>';
+    document.querySelector(".contactForChangeName a").addEventListener("click", _ => AlertN("قيس روحك أيها الضايع"));}
+
 // Start The Game
 let scoreD = document.querySelector(".score span");
 scoreD.textContent = Math.max(localStorage.getItem("score"), 0);
-document.querySelector("#start").addEventListener("click", (e) => {
-  document.querySelector(".player").removeEventListener("click", cheeter);
+
+document.querySelector("#start").addEventListener("click", async function(e) {
   // Name validation
-  let nameValid = false;
-  const niggaWord = /n[a-z]*i[a-z]*g[a-z]*g[a-z]*a[a-z]*/;
-  const speacilChar = /[§!@#\.$%^&*()_+=\[\]{};':"\\|<>\/?]/;
-  const numbers = /[0-9]+/;
-  if (inputValue.value.length >= 4 && inputValue.value.length <= 10) {
-    nameValid = true;
-    if (niggaWord.test(inputValue.value.toLowerCase())) {
-      alert("This illegal word is not allowed !");
-      nameValid = false;
+  async function nameValidationIfNotExiste() {
+    async function nameValidBDD(userName) {
+      const { data: existing } = await client
+        .from('mokabisoun')
+        .select('mokabiss')
+        .eq('mokabiss', userName)
+        .single();
+    
+      return !existing;
     }
-    if (
-      speacilChar.test(inputValue.value.toLowerCase()) ||
-      numbers.test(inputValue.value.toLowerCase())
-    ) {
-      alert("Numbers & special characters is not allowed !");
-      nameValid = false;
+    
+    let nameValid = false;
+    const niggaWord = /n[a-z]*i[a-z]*g[a-z]*g[a-z]*a[a-z]*/;
+    const speacilChar = /[§!@#\.$%^&*()_+=\[\]{};':"\\|<>\/?]/;
+    const numbers = /[0-9]+/;
+    
+    if (inputValue.value.toLowerCase().length >= 4 && inputValue.value.toLowerCase().length <= 10) {
+      nameValid = true;
+      if (niggaWord.test(inputValue.value.toLowerCase().toLowerCase())) {
+        alert("This illegal word is not allowed !");
+        nameValid = false;
+      }
+      if (speacilChar.test(inputValue.value.toLowerCase()) || numbers.test(inputValue.value.toLowerCase())) {
+        alert("Numbers & special characters are not allowed !");
+        nameValid = false;
+      }
+    } else {
+      alert("Give a name between 4 and 10 characters !");
     }
-  } else {
-    alert("Give a name between 4 and 10 characters !");
+  
+    if (nameValid) {
+      try {
+        const isNameAvailable = await nameValidBDD(inputValue.value.toLowerCase());
+        if (!isNameAvailable) {
+          alert("This username is already taken!");
+          return false;
+        }
+        else {
+          return true;
+        }
+      } catch (error) {
+        console.error("Error checking username:", error);
+        return false;
+      }
+    }
   }
-  if (!nameValid) {
+  if (!inputValue.classList.contains("fixed")) {
     e.preventDefault();
-    return;
+    const isValid = await nameValidationIfNotExiste();
+    if (!isValid) return;
   }
-  localStorage.setItem("userName", inputValue.value.trim());
+
+  localStorage.setItem("userName", inputValue.value.toLowerCase().trim());
+  document.querySelector("#save").style.display = "block";
+  document.querySelector(".player").removeEventListener("click", cheeter);
   e.target.parentElement.style.animation = "fade-out 1s";
   setTimeout(() => {
     e.target.parentElement.style.display = "none";
@@ -210,18 +377,7 @@ document.querySelector("#start").addEventListener("click", (e) => {
 
   // Level 1
   let circle = document.querySelector(".player");
-  // const chillColors = [
-  //   "#A8D8EA",
-  //   "#76C4D4",
-  //   "#4A89DC",
-  //   "#88C9A1",
-  //   "#6DBCB3",
-  //   "#F5C3C2",
-  //   "#D4B8D9",
-  //   "#E8D5B5",
-  //   "#D9BF77",
-  //   "#E0E0E0",
-  // ];
+  // const chillColors = ["#A8D8EA", "#76C4D4","#4A89DC","#88C9A1","#6DBCB3","#F5C3C2","#D4B8D9","#E8D5B5","#D9BF77","#E0E0E0"];
   let score = 0;
   localStorage.setItem(
     "score",
@@ -424,4 +580,17 @@ document.querySelector("#start").addEventListener("click", (e) => {
     score++;
     pointPlus("+1", e);
   });
+  document.getElementById("save").addEventListener("click", e => {
+    clearInterval(loop);
+    clearInterval(gameLoop);
+    document.querySelector(".main_container").style.pointerEvents = "none";
+    AlertN("تم حفظ التقدم أيها الضائع في حياتك");
+    document.getElementById("save").textContent = "إعادة";
+    e.stopPropagation();   
+    document.getElementById("save").addEventListener("click", _ => {
+      location.reload();
+    })
+    submitBestScore(localStorage.getItem("userName"), score);
+  }, {once: true})
 });
+
