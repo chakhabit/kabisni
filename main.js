@@ -1,6 +1,3 @@
-document.querySelector(".player").classList.remove(document.querySelector(".player").classList[2]);
-document.querySelector(".player").classList.add(localStorage.getItem("shape") || "circle");
-// Alert
 function AlertN(msg) {
   let TheAlert = document.querySelector(".alert");
   const alertN = document.createElement("audio");
@@ -15,102 +12,140 @@ function AlertN(msg) {
     }, 1000);
   }, 5000);
 }
+
+
+
 function store() {
-  // Store logic
-const skins = ["triangleUp", "triangleDown", "star-six", "x-shape", "heart", "infinity", "pacman"];
-let price = 100;
-const menu = document.getElementById("menu");
+  const skins = [
+    "circle",
+    "triangleUp",
+    "triangleDown",
+    "star-six",
+    "x-shape",
+    "heart",
+    "infinity",
+    "pacman",
+  ];
+  let skinPrice = 0;
+  const menu = document.getElementById("menu");
 
-// Helper function to create a store box
-function createBox(skin, price) {
-  const box = document.createElement("div");
-  box.classList.add("box", `p${price}`);
+  // Generate store boxes
+  function createBox(skin, skinPrice) {
+    const box = document.createElement("div");
+    box.classList.add("box", `p${skinPrice}`);
 
-  const shape = document.createElement("div");
-  shape.classList.add(skin, "storeBox", "shape");
+    const shape = document.createElement("div");
+    shape.classList.add(skin, "storeBox", "shape");
 
-  const priceLabel = document.createElement("span");
-  priceLabel.style.cssText = `
+    const skinPriceLabel = document.createElement("span");
+    skinPriceLabel.style.cssText = `
     position: relative;
     top: 57%;
     font-weight: 500;
     color: #3a0ca3;
     font-size: 13px;
   `;
-  priceLabel.textContent = `${price} زمبيط`;
-  priceLabel.setAttribute("dir", "rtl");
+    skinPriceLabel.textContent = `${skinPrice} زمبيط`;
+    skinPriceLabel.setAttribute("dir", "rtl");
 
-  box.appendChild(priceLabel);
-  box.appendChild(shape);
-  return box;
-}
-
-// Generate store rows
-for (let i = 0; i < skins.length; i += 2) {
-  const row = document.createElement("div");
-  row.classList.add("row");
-  menu.after(row);
-
-  // First skin box
-  row.appendChild(createBox(skins[i], price));
-  price += 200;
-
-  // Second skin box (if exists)
-  if (i + 1 < skins.length) {
-    row.appendChild(createBox(skins[i + 1], price));
-    price += 200;
+    box.appendChild(skinPriceLabel);
+    box.appendChild(shape);
+    return box;
   }
-}
 
+  // Generate store rows
+  for (let i = 0; i < skins.length; i += 2) {
+    const row = document.createElement("div");
+    row.classList.add("row");
+    menu.after(row);
 
-function pointStoreVerification() {
-  document.querySelector("#pointStore").textContent = localStorage.getItem("storePoint") || 0;
-  const storePoint = parseInt(localStorage.getItem("storePoint") || "0", 10);
-  const thresholds = [100, 300, 500, 700, 900, 1100, 1300]; 
-  thresholds.forEach((point) => {
-    if (storePoint >= point) {
-      document.querySelectorAll(`.row .p${point}`).forEach((el) => {
-        el.style.pointerEvents = "all";
-        el.classList.add("no-before");
-        el.classList.add("Unlocked");
-      });
+    // First skin box
+    row.appendChild(createBox(skins[i], skinPrice));
+    skinPrice += 200;
+
+    // Second skin box (if exists)
+    if (i + 1 < skins.length) {
+      row.appendChild(createBox(skins[i + 1], skinPrice));
+      skinPrice += 200;
     }
-  });
-}
-setInterval(() => {
-  pointStoreVerification();
-}, 500);
-pointStoreVerification()
+  }
 
-  document.querySelectorAll(".Unlocked").forEach(el => {
-    el.addEventListener("click", (e) => {
-      // Reset all backgrounds
-      document.querySelectorAll(".Unlocked").forEach(box => {
-        box.style.backgroundColor = "";
-      });
-  
-      // Apply to clicked box (with rgba for better support)
-      e.currentTarget.style.backgroundColor = "rgba(255, 215, 0, 0.23)";
-  
-      // Update player class
-      const player = document.querySelector(".player");
-      player.classList.remove(player.classList[2]);
-      player.classList.add(e.currentTarget.lastElementChild.classList[0]);
-  
-      // Save to localStorage
-      localStorage.setItem("shape", e.currentTarget.lastElementChild.classList[0]);
+  // Verification if he get the skin price or not
+  function pointStoreVerification() {
+    document.querySelector("#pointStore").textContent = localStorage.getItem("storePoint") || 0;
+    const storePoint = parseInt(localStorage.getItem("storePoint") || "0");
+    const skinPrice = [0, 200, 400, 600, 800, 1000, 1200, 1400];
+    skinPrice.forEach((point) => {
+      if (storePoint >= point) {
+        document.querySelectorAll(`.row .p${point}`).forEach((el) => {
+          el.style.pointerEvents = "all";
+          el.classList.add("no-before");
+          el.classList.add("Unlocked");
+        });
+      }
     });
-  });
+  }
+  setInterval(() => {
+    pointStoreVerification();
+  }, 500);
 
-document.querySelector(".store_icon button").addEventListener("click", () => {
-  document.querySelector(".main_container .store").style.display = "block";
 
-  document.querySelector(".main_container .store .close").addEventListener("click", (_) => {
-    document.querySelector(".main_container .store").style.display = "none";
-  })
-})
+
+  function heChooseTheSkin() {
+    document.querySelectorAll(".Unlocked").forEach((el) => {
+      el.addEventListener("click", (e) => {
+
+        // Remove the background the previous skinif he selected before
+        document.querySelectorAll(".Unlocked").forEach((box) => {
+          box.style.backgroundColor = "";
+        });
+  
+        e.currentTarget.style.backgroundColor = "rgba(255, 215, 0, 0.23)";
+  
+        // Update player skin
+        const player = document.querySelector(".player");
+        player.classList.remove(player.classList[2]);
+        player.classList.add(e.currentTarget.lastElementChild.classList[0]);
+        localStorage.setItem("shape", e.currentTarget.lastElementChild.classList[0]
+        );
+      });
+    });
+  }
+
+  setInterval(() => {
+    heChooseTheSkin();
+  }, 500);
+
+
+  function openCloseStore() {
+    document.querySelector(".store_icon button").addEventListener("click", () => {
+      document.querySelector(".main_container .store").style.display = "block";
+  
+      const closeIcon = document.querySelector(".main_container .store .close");
+
+      closeIcon.addEventListener("click", _ => {
+        document.querySelector(".main_container .store").style.display = "none";
+        });
+
+        document.addEventListener("click", (e) => {
+          if(!document.querySelector(".main_container .store").contains(e.target) &&  
+    !document.querySelector(".store_icon button").contains(e.target) )
+            document.querySelector(".main_container .store").style.display = "none";
+          });
+
+
+    });
+  }
+  openCloseStore();
 }
 store();
+saveTheSkin();
+
+function saveTheSkin() {
+  document.querySelector(".player").classList.remove(document.querySelector(".player").classList[2]);
+  document.querySelector(".player").classList.add(localStorage.getItem("shape") || "circle");
+}  
+
 // User click No
 document.querySelector("#abd").addEventListener("click", (e) => {
   let abdi = document.createElement("p");
@@ -197,19 +232,19 @@ document.querySelector("#start").addEventListener("click", (e) => {
   let preScore = score;
   let scoreCount = setInterval(() => {
     scoreD.textContent = score;
-    document.querySelector("#pointStore").textContent = localStorage.getItem("storePoint") || 0;
+    document.querySelector("#pointStore").textContent =
+      localStorage.getItem("storePoint") || 0;
     localStorage.setItem(
       "score",
       Math.max(score, localStorage.getItem("score"), 0)
     );
-    
-    if(score !== preScore) {
+
+    if (score !== preScore) {
       const currentScore = parseInt(localStorage.getItem("storePoint")) || 0;
       const pointChange = score - preScore;
       localStorage.setItem("storePoint", currentScore + pointChange);
       preScore = score;
     }
-    
   }, 500);
   let loop = setInterval(randomly, vittese);
   let count = 1;
@@ -284,8 +319,10 @@ document.querySelector("#start").addEventListener("click", (e) => {
   -khtml-user-drag: none;
   -moz-user-drag: none;
   -o-user-drag: none; width: 50px; left: calc(${Math.abs(
-      randX
-    )}% - 50px); top: calc(${Math.abs(randY)}% - 50px); cursor: pointer; animation: bug linear 2s infinite`;
+    randX
+  )}% - 50px); top: calc(${Math.abs(
+      randY
+    )}% - 50px); cursor: pointer; animation: bug linear 2s infinite`;
     yippyAudio.play();
     function yippyEatScore() {
       if (document.contains(bug)) {
@@ -349,11 +386,11 @@ document.querySelector("#start").addEventListener("click", (e) => {
       transition: all 0.5s ease-out;
     `;
     document.body.appendChild(point);
-      setTimeout(() => {
+    setTimeout(() => {
       point.style.opacity = "0";
       point.style.transform = "translateY(-20px)";
     }, 0);
-  
+
     setTimeout(() => {
       point.remove();
     }, 500);
@@ -373,11 +410,11 @@ document.querySelector("#start").addEventListener("click", (e) => {
       transition: all 0.5s ease-out;
     `;
     document.body.appendChild(point);
-      setTimeout(() => {
+    setTimeout(() => {
       point.style.opacity = "0";
       point.style.transform = "translateY(-20px)";
     }, 0);
-  
+
     setTimeout(() => {
       point.remove();
     }, 500);
@@ -387,5 +424,4 @@ document.querySelector("#start").addEventListener("click", (e) => {
     score++;
     pointPlus("+1", e);
   });
-  
 });
