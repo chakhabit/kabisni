@@ -1,10 +1,10 @@
 // database ////////////////////////////////////
-// import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
-  // const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const client = supabase.createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY
-  );
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // const client = supabase.createClient(
+  //   import.meta.env.VITE_SUPABASE_URL,
+  //   import.meta.env.VITE_SUPABASE_ANON_KEY
+  // );
 async function submitBestScore(mokabiss, newScore) {
   const { data: existing } = await client
     .from('mokabisoun')
