@@ -20,8 +20,7 @@ body {
   -webkit-font-smoothing: antialiased;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100svh;
+  height: 100vh;
   background-image: url(assets/img/bg.png);
 }
 
@@ -70,7 +69,7 @@ h6 {
 /* Framework*/
 .box {
   max-width: 550px;
-  height: 500px;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -264,7 +263,8 @@ h6 {
 /* Start Header */
 .header_container {
   padding: 10px 3rem;
-  height: 72px;
+  height: 12%;
+  overflow: hidden;
   background-color: rgba(201, 48, 48, 0.459);
   display: flex;
   justify-content: space-between;
@@ -308,6 +308,8 @@ h6 {
   position: relative;
   padding: 1rem;
   flex: 1;
+  overflow: hidden;
+  height: 75%;
 }
 .leaderBoarder {
   position: relative;
@@ -522,7 +524,8 @@ h6 {
   margin-bottom: auto;
   padding: 1rem;
   user-select: none;
-  height: 60px;
+  height: 10%;
+  overflow: hidden;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -565,11 +568,13 @@ h6 {
   animation: fade-in 2s;
   display: none;
   user-select: none;
+  padding: 2rem 15px;
 
   h2 {
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     color: #ffd700;
+    text-wrap: auto;
     margin-bottom: 1rem;
     span {
       display: inline-block;
@@ -586,12 +591,12 @@ h6 {
   background-color: #f15946;
   box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
   color: #e2fdff;
-  padding: 4rem 0;
+  padding: 2rem 1rem;
   overflow: hidden;
   justify-content: space-between;
   position: relative;
   h2 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     text-align: center;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   }
