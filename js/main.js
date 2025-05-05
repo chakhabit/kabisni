@@ -102,33 +102,41 @@ async function getOtherPlayer() {
 let playerOb = await getOtherPlayer();
 
 if(!playerOb.msg) {
+  let index = 1;
   document.querySelector(".others").innerHTML = "";
   playerOb.forEach(e => {
     const listItem = document.createElement('li');
-
-const textDiv = document.createElement('div');
-textDiv.className = 'text';
-
-const img = document.createElement('img');
-img.src = 'assets/img/others.png';
-img.alt = 'others';
-
-const nameSpan = document.createElement('span');
-nameSpan.className = 'name';
-nameSpan.textContent = e.name;
-
-const pointSpan = document.createElement('span');
-pointSpan.className = 'point';
-pointSpan.textContent = e.score;
-
-
-textDiv.appendChild(img);
-textDiv.appendChild(nameSpan);
-listItem.appendChild(textDiv);
-listItem.appendChild(pointSpan);
-document.querySelector(".others").append(listItem);
-console.log(playerOb);
-  })
+  
+    const textDiv = document.createElement('div');
+    textDiv.className = 'text';
+  
+    const profilePic = document.createElement("div");
+    profilePic.classList.add("profile_pic", "before-profile-leaders", "before-profile-others");
+  
+    profilePic.setAttribute("data-content", `#${index}`);
+  
+    const img = document.createElement('img');
+    img.src = 'assets/img/others.png';
+    img.alt = 'others';
+  
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'name';
+    nameSpan.textContent = e.name;
+  
+    const pointSpan = document.createElement('span');
+    pointSpan.className = 'point';
+    pointSpan.textContent = e.score;
+  
+    profilePic.appendChild(img);
+    textDiv.appendChild(profilePic);
+    textDiv.appendChild(nameSpan);
+    listItem.appendChild(textDiv);
+    listItem.appendChild(pointSpan);
+    document.querySelector(".others").append(listItem);
+  
+    index++;
+  });
+  
 }
 else {
   document.querySelector(".leaderBoarder .others .text .name").textContent = "لايوجد لاعب بعد";
