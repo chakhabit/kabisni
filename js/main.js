@@ -1,10 +1,6 @@
 // database ////////////////////////////////////
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  // const client = supabase.createClient(
-  //   import.meta.env.VITE_SUPABASE_URL,
-  //   import.meta.env.VITE_SUPABASE_ANON_KEY
-  // );
 async function submitBestScore(mokabiss, newScore) {
   const { data: existing } = await client
     .from('mokabisoun')
@@ -150,7 +146,7 @@ document.querySelector(".leaderBoarder .close_container").addEventListener("clic
   setTimeout(() => {
     leaderBoard.style.display = "none";
     startMenu.style.display = "flex";
-    startMenu.style.animation = "fade-in 1s"; // Add fade-in animation
+    startMenu.style.animation = "fade-in 1s";
   }, 1000);
 });
 // Store
@@ -234,7 +230,6 @@ function store() {
     document.querySelectorAll(".Unlocked").forEach((el) => {
       el.addEventListener("click", (e) => {
 
-        // Remove the background the previous skinif he selected before
         document.querySelectorAll(".Unlocked").forEach((box) => {
           box.style.backgroundColor = "";
         });
@@ -372,19 +367,16 @@ document.querySelector("#start").addEventListener("click", async function(e) {
   }
 
   localStorage.setItem("userName", inputValue.value.toLowerCase().trim());
+
+  // display : Block |`none
   document.querySelector("#save").style.display = "block";
   document.querySelector(".player").removeEventListener("click", cheeter);
-  e.target.parentElement.style.animation = "fade-out 1s";
+  document.querySelector("#start_menu").style.animation = "fade-out 1s";
   setTimeout(() => {
-    e.target.parentElement.style.display = "none";
+    document.querySelector("#start_menu").style.display = "none";
   }, 999);
 
 
-  e.target.parentElement.style.animation = "fade-out 1s";
-  e.target.parentElement.addEventListener('animationend', () => {
-    e.target.parentElement.style.display = "none";
-    // Start your game logic here
-  }, {once: true});
   // Level 1
   let circle = document.querySelector(".player");
   // const chillColors = ["#A8D8EA", "#76C4D4","#4A89DC","#88C9A1","#6DBCB3","#F5C3C2","#D4B8D9","#E8D5B5","#D9BF77","#E0E0E0"];
