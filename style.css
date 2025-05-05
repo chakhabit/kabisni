@@ -21,7 +21,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100lvh;
   background-image: url(assets/img/bg.png);
   overflow: hidden;
 }
@@ -550,22 +550,24 @@ h6 {
   box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
   color: #e2fdff;
   padding: 4rem 0;
+  overflow: hidden;
+  justify-content: space-between;
+  position: relative;
   h2 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     text-align: center;
-    margin-bottom: 2rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   }
   input {
-    margin-bottom: 1rem;
     outline: none;
-    border: 1px solid transparent;
     background-color: transparent;
     text-align: center;
     border-radius: 10px;
     padding: 10px;
     color: #e2fdff;
     text-transform: lowercase;
+    border: 1px solid #ccc;
+    margin: 10px auto;
     &::placeholder {
       color: #e2fdff;
       font-weight: 500;
@@ -576,7 +578,6 @@ h6 {
     }
   }
   .contactForChangeName {
-    margin-bottom: 20px;
     background-color: #003554;
     padding: 1rem;
     border-radius: 20px;
@@ -594,21 +595,22 @@ h6 {
         flex-direction: column;
         align-items: center;
         gap: 10px;
+        margin: 10px auto;
         width: 100%;
   }
   button {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     text-shadow: 1px 1px 3px #888;
     display: block;
     background-color: #006494;
     color: #e2fdff;
     outline: none;
-    margin-bottom: 0.5rem;
     border-radius: 30px;
     cursor: pointer;
     transition: 0.2s;
     user-select: none;
     width: 20%;
+    padding: 5px;
     &:hover {
       color: #ffd700;
       opacity: 0.8;
@@ -622,6 +624,9 @@ h6 {
   }
   #bestKabasin {
     margin-top: auto;
+    width: 70%;
+    background-color: #ffd700;
+    color: #003554;
   }
 }
 .alert {

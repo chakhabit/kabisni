@@ -303,6 +303,8 @@ const userName = localStorage.getItem("userName");
 if (userName) {
   inputValue.value = userName;
   inputValue.disabled = true;
+  inputValue.style.cursor = "no-drop"
+  inputValue.style.userSelect = "none"
   inputValue.classList.add("fixed");
   document.getElementsByClassName("contactForChangeName")[0].innerHTML =
     'لا يمكنك تعديل الاسم مجددا.  <a href="#">راسلنا</a>';
@@ -368,7 +370,7 @@ document.querySelector("#start").addEventListener("click", async function(e) {
 
   localStorage.setItem("userName", inputValue.value.toLowerCase().trim());
 
-  // display : Block |`none
+  // display : Block | none
   document.querySelector("#save").style.display = "block";
   document.querySelector(".player").removeEventListener("click", cheeter);
   document.querySelector("#start_menu").style.animation = "fade-out 1s";
