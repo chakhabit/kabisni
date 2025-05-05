@@ -102,7 +102,7 @@ async function getOtherPlayer() {
 let playerOb = await getOtherPlayer();
 
 if(!playerOb.msg) {
-  let index = 1;
+  let index = 2;
   document.querySelector(".others").innerHTML = "";
   playerOb.forEach(e => {
     const listItem = document.createElement('li');

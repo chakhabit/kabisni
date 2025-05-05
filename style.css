@@ -109,7 +109,7 @@ h6 {
 .before-profile-leaders::before {
   position: absolute;
   top: 0;
-  left: 22px;
+  left: 0;
   width: 2.5rem;
   height: 2.5rem;
   background-color: gold;
