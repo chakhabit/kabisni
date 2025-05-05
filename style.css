@@ -388,7 +388,11 @@ h6 {
   }
   .others .text {
     margin-bottom: 10px;
+    gap: 10px;
+    flex-direction: column;
   }
+  .others li:not(:last-child) {
+    margin-bottom: 1rem;
 }
 .main_container .store {
   position: absolute;
