@@ -26,7 +26,7 @@ function AlertN(msg) {
     TheAlert.style.animation = "fade-out 1s";
     setTimeout(() => {
       TheAlert.style.display = "none";
-    }, 1000);
+    }, 999);
   }, 5000);
 }
 // best kabasin
@@ -102,6 +102,7 @@ async function getOtherPlayer() {
 let playerOb = await getOtherPlayer();
 
 if(!playerOb.msg) {
+  document.querySelector(".others").innerHTML = "";
   playerOb.forEach(e => {
     const listItem = document.createElement('li');
 
@@ -147,7 +148,7 @@ document.querySelector(".leaderBoarder .close_container").addEventListener("clic
     leaderBoard.style.display = "none";
     startMenu.style.display = "flex";
     startMenu.style.animation = "fade-in 1s";
-  }, 1000);
+  }, 999);
 });
 // Store
 function store() {
@@ -378,7 +379,9 @@ document.querySelector("#start").addEventListener("click", async function(e) {
     document.querySelector("#start_menu").style.display = "none";
   }, 999);
 
-
+  setTimeout(() => {
+    AlertN("لا تنسى حفظ تقدمك بعد الانتهاء")
+  }, 5000);
   // Level 1
   let circle = document.querySelector(".player");
   // const chillColors = ["#A8D8EA", "#76C4D4","#4A89DC","#88C9A1","#6DBCB3","#F5C3C2","#D4B8D9","#E8D5B5","#D9BF77","#E0E0E0"];
