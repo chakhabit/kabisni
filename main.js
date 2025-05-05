@@ -379,6 +379,12 @@ document.querySelector("#start").addEventListener("click", async function(e) {
     e.target.parentElement.style.display = "none";
   }, 999);
 
+
+  e.target.parentElement.style.animation = "fade-out 1s";
+  e.target.parentElement.addEventListener('animationend', () => {
+    e.target.parentElement.style.display = "none";
+    // Start your game logic here
+  }, {once: true});
   // Level 1
   let circle = document.querySelector(".player");
   // const chillColors = ["#A8D8EA", "#76C4D4","#4A89DC","#88C9A1","#6DBCB3","#F5C3C2","#D4B8D9","#E8D5B5","#D9BF77","#E0E0E0"];
