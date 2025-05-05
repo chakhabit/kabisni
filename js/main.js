@@ -1,6 +1,7 @@
-// database ////////////////////////////////////
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
-  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 async function submitBestScore(mokabiss, newScore) {
   const { data: existing } = await client
     .from('mokabisoun')
@@ -11,153 +12,135 @@ async function submitBestScore(mokabiss, newScore) {
   if (!existing) {
     await client.from('mokabisoun').insert([{ mokabiss, bestScore: newScore }]);
   } else if (newScore > existing.bestScore) {
-    await client.from('mokabisoun').update({ bestScore: newScore }).eq('mokabiss', mokabiss);
+    await client.from('mokabisoun')
+      .update({ bestScore: newScore })
+      .eq('mokabiss', mokabiss);
   }
 }
-////////////////////////////////////////////
-function AlertN(msg) {
-  let TheAlert = document.querySelector(".alert");
-  const alertN = document.createElement("audio");
-  alertN.src = "assets/sound/alert.mp3";
-  alertN.play();
-  TheAlert.textContent = msg;
-  TheAlert.style.display = "block";
-  setTimeout(() => {
-    TheAlert.style.animation = "fade-out 1s";
-    setTimeout(() => {
-      TheAlert.style.display = "none";
-    }, 999);
-  }, 5000);
-}
-// best kabasin
-document.querySelector("#bestKabasin").addEventListener("click", e => {
-  const startMenu = document.querySelector("#start_menu");
-  const leaderBoard = document.querySelector(".leaderBoarder"); 
-  
-  startMenu.style.animation = "fade-out 1s";
-  setTimeout(() => {
-    startMenu.style.display = "none";
-    leaderBoard.style.display = "flex";
-    leaderBoard.style.animation = "fade-in 1s"; 
-  }, 1000);
 
+document.addEventListener("DOMContentLoaded", () => {
+
+  // Utility function
+  function AlertN(msg) {
+    let TheAlert = document.querySelector(".alert");
+    const alertN = document.createElement("audio");
+    alertN.src = "assets/sound/alert.mp3";
+    alertN.play();
+    TheAlert.textContent = msg;
+    TheAlert.style.display = "block";
+    setTimeout(() => {
+      TheAlert.style.animation = "fade-out 1s";
+      setTimeout(() => {
+        TheAlert.style.display = "none";
+      }, 999);
+    }, 5000);
+  }
+
+  // Fetch & Display Top Player
   async function getTopPlayer() {
     const { data, error } = await client
       .from('mokabisoun')
       .select('*')
       .order('bestScore', { ascending: false })
       .limit(1);
-  
-    if (error) {
-      console.error("Error fetching top score:", error);
-      return {msg: "error"};
-    }
-  
-    if (data.length > 0) {
-      const topPlayer = data[0];
-      console.log(`🏆 Top player: ${topPlayer.mokabiss}, Score: ${topPlayer.bestScore}`);
-      return {name: topPlayer.mokabiss, score: topPlayer.bestScore};
+
+    if (error || !data.length) return { msg: "none" };
+    return {
+      name: data[0].mokabiss,
+      score: data[0].bestScore
+    };
+  }
+
+  // Fetch & Display Other Players
+  async function getOtherPlayers() {
+    const { data, error } = await client
+      .from('mokabisoun')
+      .select('*')
+      .order('bestScore', { ascending: false })
+      .range(1, 9);
+
+    if (error || !data.length) return { msg: "none" };
+    return data.map(player => ({ name: player.mokabiss, score: player.bestScore }));
+  }
+
+  // Load Leaderboard
+  document.querySelector("#bestKabasin").addEventListener("click", async () => {
+    const startMenu = document.querySelector("#start_menu");
+    const leaderBoard = document.querySelector(".leaderBoarder");
+
+    startMenu.style.animation = "fade-out 1s";
+    setTimeout(() => {
+      startMenu.style.display = "none";
+      leaderBoard.style.display = "flex";
+      leaderBoard.style.animation = "fade-in 1s";
+    }, 1000);
+
+    const bestPlayer = await getTopPlayer();
+    if (!bestPlayer.msg) {
+      document.querySelector(".leader .name").textContent = bestPlayer.name;
+      document.querySelector(".leader .point").textContent = bestPlayer.score;
     } else {
-      console.log("No scores found yet.");
-      return {msg: "none"};
+      document.querySelector(".leader .name").textContent = "لايوجد لاعب بعد";
+      document.querySelector(".leader .point").textContent = "لايوجد لاعب بعد";
     }
-}
 
-(async function() {
-  let bestPlayerOb = await getTopPlayer();
-  if(!bestPlayerOb.msg) {
-    document.querySelector(".leaderBoarder .leader .name").textContent = bestPlayerOb.name;
-    document.querySelector(".leaderBoarder .leader .point").textContent = bestPlayerOb.score;
-  }
-  else {
-    document.querySelector(".leaderBoarder .leader .name").textContent = "لايوجد لاعب بعد";
-    document.querySelector(".leaderBoarder .leader .point").textContent = "لايوجد لاعب بعد";
-  }
-})();
+    const otherPlayers = await getOtherPlayers();
+    const list = document.querySelector(".others");
+    list.innerHTML = "";
 
+    if (!otherPlayers.msg) {
+      otherPlayers.forEach((player, i) => {
+        const item = document.createElement("li");
 
-async function getOtherPlayer() {
-  const { data, error } = await client
-    .from('mokabisoun')
-    .select('*')
-    .order('bestScore', { ascending: false })
-    .range(1, 9);
+        const textDiv = document.createElement("div");
+        textDiv.className = 'text';
 
-  if (error) {
-    console.error("Error fetching top score:", error);
-    return {msg: "error"};
-  }
+        const profile = document.createElement("div");
+        profile.className = `profile_pic before-profile-leaders before-profile-others`;
+        profile.dataset.content = `#${i + 2}`;
 
-  if (data.length > 0) {
-    const topPlayer = data[0];
-    console.log(`🏆 player: ${topPlayer.mokabiss}, Score: ${topPlayer.bestScore}`);
-    return data.map(player => ({name: player.mokabiss, score: player.bestScore}));
-  } else {
-    console.log("No scores found yet.");
-    return {msg: "none"};
-  }
-}
+        const img = document.createElement("img");
+        img.src = 'assets/img/others.png';
+        img.alt = 'others';
+        profile.appendChild(img);
 
-(async function() {
-let playerOb = await getOtherPlayer();
+        const name = document.createElement("span");
+        name.className = 'name';
+        name.textContent = player.name;
 
-if(!playerOb.msg) {
-  let index = 2;
-  document.querySelector(".others").innerHTML = "";
-  playerOb.forEach(e => {
-    const listItem = document.createElement('li');
-  
-    const textDiv = document.createElement('div');
-    textDiv.className = 'text';
-  
-    const profilePic = document.createElement("div");
-    profilePic.classList.add("profile_pic", "before-profile-leaders", "before-profile-others");
-  
-    profilePic.setAttribute("data-content", `#${index}`);
-  
-    const img = document.createElement('img');
-    img.src = 'assets/img/others.png';
-    img.alt = 'others';
-  
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'name';
-    nameSpan.textContent = e.name;
-  
-    const pointSpan = document.createElement('span');
-    pointSpan.className = 'point';
-    pointSpan.textContent = e.score;
-  
-    profilePic.appendChild(img);
-    textDiv.appendChild(profilePic);
-    textDiv.appendChild(nameSpan);
-    listItem.appendChild(textDiv);
-    listItem.appendChild(pointSpan);
-    document.querySelector(".others").append(listItem);
-  
-    index++;
+        const point = document.createElement("span");
+        point.className = 'point';
+        point.textContent = player.score;
+
+        textDiv.appendChild(profile);
+        textDiv.appendChild(name);
+        item.appendChild(textDiv);
+        item.appendChild(point);
+        list.appendChild(item);
+      });
+    } else {
+      const placeholder = document.createElement("li");
+      placeholder.innerHTML = `
+        <div class="text">
+          <span class="name">لايوجد لاعب بعد</span>
+        </div>
+        <span class="point">لايوجد لاعب بعد</span>`;
+      list.appendChild(placeholder);
+    }
   });
-  
-}
-else {
-  document.querySelector(".leaderBoarder .others .text .name").textContent = "لايوجد لاعب بعد";
-  document.querySelector(".leaderBoarder .others .point").textContent = "لايوجد لاعب بعد";
-}
-})();
 
+  // Close leaderboard
+  document.querySelector(".leaderBoarder .close_container").addEventListener("click", () => {
+    const leaderBoard = document.querySelector(".leaderBoarder");
+    const startMenu = document.querySelector("#start_menu");
 
-
-});
-document.querySelector(".leaderBoarder .close_container").addEventListener("click", () => {
-  const leaderBoard = document.querySelector(".leaderBoarder");
-  const startMenu = document.querySelector("#start_menu");
-  
-  leaderBoard.style.animation = "fade-out 1s";
-  setTimeout(() => {
-    leaderBoard.style.display = "none";
-    startMenu.style.display = "flex";
-    startMenu.style.animation = "fade-in 1s";
-  }, 999);
-});
+    leaderBoard.style.animation = "fade-out 1s";
+    setTimeout(() => {
+      leaderBoard.style.display = "none";
+      startMenu.style.display = "flex";
+      startMenu.style.animation = "fade-in 1s";
+    }, 999);
+  });
 // Store
 function store() {
   const skins = [
@@ -609,3 +592,4 @@ document.querySelector("#start").addEventListener("click", async function(e) {
   }, {once: true})
 });
 
+})
