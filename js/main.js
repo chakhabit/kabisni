@@ -63,15 +63,25 @@ async function handleSignUp() {
   const username = document.getElementById('userNameSignUp').value;
   const email = document.getElementById('emailSignUp').value;
   const password = document.getElementById('passwordSignUp').value;
-  
+
+  if (!username || !email || !password) {
+    AlertN("الرجاء ملء جميع الحقول");
+    return;
+  }
+
   try {
-    await signUp(email, password, username);
-    updateUIAfterAuth();
+    const { error } = await signUp(email, password, username);
+    
+    if (error) throw error;
+    
+    AlertN("تم إرسال رابط التفعيل إلى بريدك الإلكتروني");
+    document.getElementById('signUp').reset();
+    showLognIn();
+    
   } catch (error) {
-    alert(error.message);
+    AlertN(`خطأ في التسجيل: ${error.message}`);
   }
 }
-
 document.querySelector("#logInAccount").addEventListener("click", handleLogin);
 async function handleLogin() {
   const email = document.getElementById('userNameLogIn').value;
