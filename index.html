@@ -32,6 +32,7 @@
       href="assets/img/favicon-32x32.png"
       type="image/x-icon"
     />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css" />
     <title>كبسني | Kabisni</title>
   </head>
@@ -71,26 +72,45 @@
         <p>الهورينغ استغل الفوضى، وطار بالانتصار 🪰💥</p>
       </div>
 
+            <!-- Start Logn In-->
+            <div dir="rtl" id="logIn" class="start box">
+              <h2>هل أنت مستعد للتكبيس !</h2>
+              <div class="inputs">
+                <input id="userNameLogIn" type="email" placeholder="بريد المكبس">
+                <input id="passwordLogIn" type="password" placeholder="كلمة المرور">
+              </div>
+              <p class="ask">ليس لديك حساب. <button id="donthaveAccount">إنشاء</button></p>
+              <div class="buttons">
+                <button id="logInAccount">تسجيل</button>
+              </div>
+            </div>
+
+       <!-- Start Sign Up menu -->
+       <div dir="rtl" id="signUp" class="start box">
+        <h2>إنشاء حساب</h2>
+        <div class="inputs">
+          <input id="userNameSignUp" type="text" placeholder="إسم المكبس">
+          <input id="emailSignUp" type="email" placeholder="بريد المكبس">
+          <input id="passwordSignUp" type="password" placeholder="كلمة المرور">
+        </div>
+
+        <p class="ask"> لديك حساب. <button id="haveAccount">دخول</button></p>
+        <div class="buttons">
+          <button id="signUpAccount">تسجيل</button>
+        </div>
+      </div>
+      <!-- Start Start-menu && Logn out -->
       <div dir="rtl" id="start_menu" class="start box">
         <h2>هل أنت مستعد للتكبيس !</h2>
-        <input
-          id="nameInput"
-          type="text"
-          name="mokabiss"
-          required
-          placeholder="أدخل إسمك بالإنجليزي"
-          pattern="[a-z]{4,10}"
-        />
-        <span class="contactForChangeName"
-          >ملاحظة: لايمكنك تغيير الاسم لاحقا</span
-        >
+          <span id="username-display"></span>
+        <p class="ask">هل تريد <button id="logOutAccount">الخروج</button></p>
         <div class="buttons">
-          <button id="start">إبدأ</button>
+        <button id="start">إبدأ</button>
         <button type="button" id="abd">لا</button>
         <button id="bestKabasin">أفضل الكباسين</button>
         </div>
       </div>
-
+      <!-- Start leaderBoarder -->
       <div class="leaderBoarder box">
         <div class="close_container">
           <button class="close">X</button>
@@ -111,16 +131,16 @@
 
       <span class="alert" dir="rtl"></span>
     </main>
-    <!-- Start Fotter -->
+    <!-- Start Footter -->
     <footer class="footer_container">
       <p>
         &copy; <a href="https://github.com/chakhabit/kabisni">Alaa MEKIBES</a>
       </p>
+            <!-- Timer -->
+            <div id="timer" style="font-weight: 500; display: none;">0.0</div>
       <button id="save">حفظ التقدم</button>
     </footer>
-    <script src="
-https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js
-"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>

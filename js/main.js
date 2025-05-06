@@ -1,146 +1,327 @@
+// database
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
+// Sign Up
+async function signUp(email, password, username) {
+  try {
+    const { data: { user }, error } = await client.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { username } // Stores username in auth metadata
+      }
+    });
 
-async function submitBestScore(mokabiss, newScore) {
-  const { data: existing } = await client
-    .from('mokabisoun')
-    .select('*')
-    .eq('mokabiss', mokabiss)
-    .single();
-
-  if (!existing) {
-    await client.from('mokabisoun').insert([{ mokabiss, bestScore: newScore }]);
-  } else if (newScore > existing.bestScore) {
-    await client.from('mokabisoun')
-      .update({ bestScore: newScore })
-      .eq('mokabiss', mokabiss);
+    if (error) throw error;
+    return user;
+  } catch (error) {
+    console.error("Signup error:", error);
+    throw new Error("Signup failed: " + error.message);
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// Sign in
+async function signIn(email, password) {
+  const { data, error } = await client.auth.signInWithPassword({
+    email,
+    password
+  });
 
-  // Utility function
-  function AlertN(msg) {
-    let TheAlert = document.querySelector(".alert");
-    const alertN = document.createElement("audio");
-    alertN.src = "assets/sound/alert.mp3";
-    alertN.play();
-    TheAlert.textContent = msg;
-    TheAlert.style.display = "block";
-    setTimeout(() => {
-      TheAlert.style.animation = "fade-out 1s";
-      setTimeout(() => {
-        TheAlert.style.display = "none";
-      }, 999);
-    }, 5000);
+  if (error) throw error;
+  return data.user;
+}
+
+// Sign out
+async function signOut() {
+  const { error } = await client.auth.signOut();
+  if (error) throw error;
+}
+
+// Show log in & sign up ui
+document.querySelector("#donthaveAccount").addEventListener("click", showSignUp);
+function showSignUp() {
+  document.getElementById('signUp').style.display = 'flex';
+  document.getElementById('logIn').style.display = 'none';
+}
+
+document.querySelector("#haveAccount").addEventListener("click", showLognIn);
+function showLognIn() {
+  document.getElementById('logIn').style.display = 'flex';
+  document.getElementById('signUp').style.display = 'none';
+}
+
+// send login & sign up & log out
+document.querySelector("#signUpAccount").addEventListener("click", handleSignUp);
+async function handleSignUp() {
+  const username = document.getElementById('userNameSignUp').value;
+  const email = document.getElementById('emailSignUp').value;
+  const password = document.getElementById('passwordSignUp').value;
+  
+  try {
+    await signUp(email, password, username);
+    updateUIAfterAuth();
+  } catch (error) {
+    alert(error.message);
   }
+}
 
-  // Fetch & Display Top Player
+document.querySelector("#logInAccount").addEventListener("click", handleLogin);
+async function handleLogin() {
+  const email = document.getElementById('userNameLogIn').value;
+  const password = document.getElementById('passwordLogIn').value;
+  
+  try {
+    await signIn(email, password);
+    updateUIAfterAuth();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+document.querySelector("#logOutAccount").addEventListener("click", handleLogout);
+async function handleLogout() {
+  try {
+    await signOut();
+    updateUIAfterAuth();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+// Update the UI after auth check
+async function updateUIAfterAuth() {
+  try {
+    // Check auth state with proper error handling
+    const { data: { user }, error } = await client.auth.getUser();
+    
+    if (error) {
+      if (error.message.includes("Auth session missing")) {
+        console.log("No active session - showing login screen");
+        showLoginScreen();
+        return;
+      }
+      throw error;
+    }
+
+    if (user) {
+      // Add slight delay for session propagation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Get profile data with error handling
+      const { data: profile, error: profileError } = await client
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      const username = profile?.username || user.user_metadata?.username || 'Guest';
+      
+      document.getElementById('signUp').style.display = 'none';
+      document.getElementById('logIn').style.display = 'none';
+      document.getElementById('start_menu').style.display = 'flex';
+      document.getElementById('username-display').textContent = username;
+    } else {
+      showLoginScreen();
+    }
+  } catch (error) {
+    console.error("UI update error:", error);
+    AlertN("Session error. Please refresh the page.");
+    showLoginScreen();
+  }
+}
+
+function showLoginScreen() {
+  document.getElementById('signUp').style.display = 'none';
+  document.getElementById('logIn').style.display = 'flex';
+  document.getElementById('start_menu').style.display = 'none';
+}
+
+// Initialize auth state listener
+client.auth.onAuthStateChange((event, session) => {
+  console.log("Auth state changed:", event);
+  if (event === 'INITIAL_SESSION') {
+    // Handle initial session loading
+    updateUIAfterAuth();
+  } else if (event === 'SIGNED_IN') {
+    // Wait for session to fully initialize
+    setTimeout(updateUIAfterAuth, 500);
+  }
+});
+
+// Modified initialization code
+document.addEventListener('DOMContentLoaded', () => {
+  // Give time for session restoration
+  setTimeout(updateUIAfterAuth, 300);
+});
+// Check auth state on page load
+document.addEventListener('DOMContentLoaded', () => {
+  updateUIAfterAuth();
+});
+
+
+////////////////////////////////////////////
+function AlertN(msg) {
+  let TheAlert = document.querySelector(".alert");
+  const alertN = document.createElement("audio");
+  alertN.src = "assets/sound/alert.mp3";
+  alertN.play();
+  TheAlert.textContent = msg;
+  TheAlert.style.display = "block";
+  TheAlert.style.userSelect = "none";
+  setTimeout(() => {
+    TheAlert.style.animation = "fade-out 1s";
+    setTimeout(() => {
+      TheAlert.style.display = "none";
+    }, 999);
+  }, 5000);
+}
+// best kabasin
+document.querySelector("#bestKabasin").addEventListener("click", e => {
+  const startMenu = document.querySelector("#start_menu");
+  const leaderBoard = document.querySelector(".leaderBoarder"); 
+  
+  startMenu.style.animation = "fade-out 1s";
+  setTimeout(() => {
+    startMenu.style.display = "none";
+    leaderBoard.style.display = "flex";
+    leaderBoard.style.animation = "fade-in 1s"; 
+  }, 1000);
+
   async function getTopPlayer() {
     const { data, error } = await client
-      .from('mokabisoun')
-      .select('*')
-      .order('bestScore', { ascending: false })
+      .from('scores')
+      .select(`score,
+    game_duration,
+    created_at,
+    profiles:user_id (username)`)
+      .order('score', { ascending: false })
       .limit(1);
+  
+    if (error) {
+      console.error("Error fetching top score:", error);
+      return {msg: "error"};
+    }
+  
+    if (data.length > 0) {
+      const topPlayer = data[0];
+      console.log(`🏆 Top player: ${topPlayer.profiles.username}, Score: ${topPlayer.score}`);
+      return {name: topPlayer.profiles.username, score: topPlayer.score};
+    } else {
+      console.log("No scores found yet.");
+      return {msg: "none"};
+    }
+}
 
-    if (error || !data.length) return { msg: "none" };
-    return {
-      name: data[0].mokabiss,
-      score: data[0].bestScore
-    };
+(async function() {
+  let bestPlayerOb = await getTopPlayer();
+  if(!bestPlayerOb.msg) {
+    document.querySelector(".leaderBoarder .leader .name").textContent = bestPlayerOb.name;
+    document.querySelector(".leaderBoarder .leader .point").textContent = bestPlayerOb.score;
+  }
+  else {
+    document.querySelector(".leaderBoarder .leader .name").textContent = "لايوجد لاعب بعد";
+    document.querySelector(".leaderBoarder .leader .point").textContent = "لايوجد لاعب بعد";
+  }
+})();
+
+
+async function getOtherPlayer() {
+  const { data, error } = await client
+    .from('scores')
+    .select(`score,
+      game_duration,
+      created_at,
+      profiles:user_id (username)`)
+    .order('score', { ascending: false })
+    .range(1, 9);
+
+  if (error) {
+    console.error("Error fetching top score:", error);
+    return {msg: "error"};
   }
 
-  // Fetch & Display Other Players
-  async function getOtherPlayers() {
-    const { data, error } = await client
-      .from('mokabisoun')
-      .select('*')
-      .order('bestScore', { ascending: false })
-      .range(1, 9);
-
-    if (error || !data.length) return { msg: "none" };
-    return data.map(player => ({ name: player.mokabiss, score: player.bestScore }));
+  if (data.length > 0) {
+    const topPlayer = data[0];
+    console.log(`🏆 player: ${topPlayer.username}, Score: ${topPlayer.score}`);
+    return data.map(player => ({
+      name: player.profiles?.username || 'Anonymous', 
+      score: player.score
+    }));
+  } else {
+    console.log("No scores found yet.");
+    return {msg: "none"};
   }
+}
 
-  // Load Leaderboard
-  document.querySelector("#bestKabasin").addEventListener("click", async () => {
-    const startMenu = document.querySelector("#start_menu");
-    const leaderBoard = document.querySelector(".leaderBoarder");
+(async function() {
+let playerOb = await getOtherPlayer();
 
-    startMenu.style.animation = "fade-out 1s";
-    setTimeout(() => {
-      startMenu.style.display = "none";
-      leaderBoard.style.display = "flex";
-      leaderBoard.style.animation = "fade-in 1s";
-    }, 1000);
-
-    const bestPlayer = await getTopPlayer();
-    if (!bestPlayer.msg) {
-      document.querySelector(".leader .name").textContent = bestPlayer.name;
-      document.querySelector(".leader .point").textContent = bestPlayer.score;
-    } else {
-      document.querySelector(".leader .name").textContent = "لايوجد لاعب بعد";
-      document.querySelector(".leader .point").textContent = "لايوجد لاعب بعد";
-    }
-
-    const otherPlayers = await getOtherPlayers();
-    const list = document.querySelector(".others");
-    list.innerHTML = "";
-
-    if (!otherPlayers.msg) {
-      otherPlayers.forEach((player, i) => {
-        const item = document.createElement("li");
-
-        const textDiv = document.createElement("div");
-        textDiv.className = 'text';
-
-        const profile = document.createElement("div");
-        profile.className = `profile_pic before-profile-leaders before-profile-others`;
-        profile.dataset.content = `#${i + 2}`;
-
-        const img = document.createElement("img");
-        img.src = 'assets/img/others.png';
-        img.alt = 'others';
-        profile.appendChild(img);
-
-        const name = document.createElement("span");
-        name.className = 'name';
-        name.textContent = player.name;
-
-        const point = document.createElement("span");
-        point.className = 'point';
-        point.textContent = player.score;
-
-        textDiv.appendChild(profile);
-        textDiv.appendChild(name);
-        item.appendChild(textDiv);
-        item.appendChild(point);
-        list.appendChild(item);
-      });
-    } else {
-      const placeholder = document.createElement("li");
-      placeholder.innerHTML = `
-        <div class="text">
-          <span class="name">لايوجد لاعب بعد</span>
-        </div>
-        <span class="point">لايوجد لاعب بعد</span>`;
-      list.appendChild(placeholder);
-    }
+if(!playerOb.msg) {
+  let index = 2;
+  document.querySelector(".others").innerHTML = "";
+  playerOb.forEach(e => {
+    const listItem = document.createElement('li');
+  
+    const textDiv = document.createElement('div');
+    textDiv.className = 'text';
+  
+    const profilePic = document.createElement("div");
+    profilePic.classList.add("profile_pic", "before-profile-leaders", "before-profile-others");
+  
+    profilePic.setAttribute("data-content", `#${index}`);
+  
+    const img = document.createElement('img');
+    img.src = 'assets/img/others.png';
+    img.alt = 'others';
+  
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'name';
+    nameSpan.textContent = e.name;
+  
+    const pointSpan = document.createElement('span');
+    pointSpan.className = 'point';
+    pointSpan.textContent = e.score;
+  
+    profilePic.appendChild(img);
+    textDiv.appendChild(profilePic);
+    textDiv.appendChild(nameSpan);
+    listItem.appendChild(textDiv);
+    listItem.appendChild(pointSpan);
+    document.querySelector(".others").append(listItem);
+  
+    index++;
   });
+  
+}
+else {
+  if(document.querySelector(".leaderBoarder .others .text .name")) {
 
-  // Close leaderboard
-  document.querySelector(".leaderBoarder .close_container").addEventListener("click", () => {
-    const leaderBoard = document.querySelector(".leaderBoarder");
-    const startMenu = document.querySelector("#start_menu");
+    document.querySelector(".leaderBoarder .others .text .name").textContent = "لايوجد لاعب بعد";
+    document.querySelector(".leaderBoarder .others .point").textContent = "لايوجد لاعب بعد";
+  }
+}
+})();
 
-    leaderBoard.style.animation = "fade-out 1s";
-    setTimeout(() => {
-      leaderBoard.style.display = "none";
-      startMenu.style.display = "flex";
-      startMenu.style.animation = "fade-in 1s";
-    }, 999);
-  });
+
+
+});
+document.querySelector(".leaderBoarder .close_container").addEventListener("click", () => {
+  const leaderBoard = document.querySelector(".leaderBoarder");
+  const startMenu = document.querySelector("#start_menu");
+  
+  leaderBoard.style.animation = "fade-out 1s";
+  setTimeout(() => {
+    leaderBoard.style.display = "none";
+    startMenu.style.display = "flex";
+    startMenu.style.animation = "fade-in 1s";
+  }, 999);
+});
 // Store
 function store() {
   const skins = [
@@ -289,81 +470,27 @@ let cheeter = (_) => {
 document
   .querySelector(".player")
   .addEventListener("click", cheeter, { once: true });
-// Name check
-let inputValue = document.querySelector("input");
-const userName = localStorage.getItem("userName");
-if (userName) {
-  inputValue.value = userName;
-  inputValue.disabled = true;
-  inputValue.style.cursor = "no-drop"
-  inputValue.style.userSelect = "none"
-  inputValue.classList.add("fixed");
-  document.getElementsByClassName("contactForChangeName")[0].innerHTML =
-    'لا يمكنك تعديل الاسم مجددا.  <a href="#">راسلنا</a>';
-    document.querySelector(".contactForChangeName a").addEventListener("click", _ => AlertN("قيس روحك أيها الضايع"));}
+
 
 // Start The Game
 let scoreD = document.querySelector(".score span");
 scoreD.textContent = Math.max(localStorage.getItem("score"), 0);
+let gameStartTime;
+let gameEndTime;
+let gameTimer;
+let isGameRunning = false;
 
-document.querySelector("#start").addEventListener("click", async function(e) {
-  // Name validation
-  async function nameValidationIfNotExiste() {
-    async function nameValidBDD(userName) {
-      const { data: existing } = await client
-        .from('mokabisoun')
-        .select('mokabiss')
-        .eq('mokabiss', userName)
-        .single();
-    
-      return !existing;
-    }
-    
-    let nameValid = false;
-    const niggaWord = /n[a-z]*i[a-z]*g[a-z]*g[a-z]*a[a-z]*/;
-    const speacilChar = /[§!@#\.$%^&*()_+=\[\]{};':"\\|<>\/?]/;
-    const numbers = /[0-9]+/;
-    
-    if (inputValue.value.toLowerCase().length >= 4 && inputValue.value.toLowerCase().length <= 10) {
-      nameValid = true;
-      if (niggaWord.test(inputValue.value.toLowerCase().toLowerCase())) {
-        alert("This illegal word is not allowed !");
-        nameValid = false;
-      }
-      if (speacilChar.test(inputValue.value.toLowerCase()) || numbers.test(inputValue.value.toLowerCase())) {
-        alert("Numbers & special characters are not allowed !");
-        nameValid = false;
-      }
-    } else {
-      alert("Give a name between 4 and 10 characters !");
-    }
-  
-    if (nameValid) {
-      try {
-        const isNameAvailable = await nameValidBDD(inputValue.value.toLowerCase());
-        if (!isNameAvailable) {
-          alert("This username is already taken!");
-          return false;
-        }
-        else {
-          return true;
-        }
-      } catch (error) {
-        console.error("Error checking username:", error);
-        return false;
-      }
-    }
-  }
-  if (!inputValue.classList.contains("fixed")) {
-    e.preventDefault();
-    const isValid = await nameValidationIfNotExiste();
-    if (!isValid) return;
-  }
+document.querySelector("#start").addEventListener("click", startGame);
 
-  localStorage.setItem("userName", inputValue.value.toLowerCase().trim());
+function startGame() {
+  isGameRunning = true;
+  gameStartTime = new Date();
+  gameTimer = setInterval(updateGameTimer, 1000);
+
 
   // display : Block | none
   document.querySelector("#save").style.display = "block";
+  document.querySelector("#timer").style.display = "block";
   document.querySelector(".player").removeEventListener("click", cheeter);
   document.querySelector("#start_menu").style.animation = "fade-out 1s";
   setTimeout(() => {
@@ -382,7 +509,6 @@ document.querySelector("#start").addEventListener("click", async function(e) {
     Math.max(score, localStorage.getItem("score"), 0)
   );
   let vittese = 2000;
-  // let vittese = 200;
   let preScore = score;
   let scoreCount = setInterval(() => {
     scoreD.textContent = score;
@@ -578,18 +704,98 @@ document.querySelector("#start").addEventListener("click", async function(e) {
     score++;
     pointPlus("+1", e);
   });
-  document.getElementById("save").addEventListener("click", e => {
+
+  document.getElementById("save").addEventListener("click", endGame, {once: true});
+
+
+
+  function endGame() {
+    if (!isGameRunning) return;
+    
+    isGameRunning = false;
+    clearInterval(gameTimer);
+    gameEndTime = new Date();
+    
+    const gameDuration = (gameEndTime - gameStartTime) / 1000;
+  
     clearInterval(loop);
     clearInterval(gameLoop);
     document.querySelector(".main_container").style.pointerEvents = "none";
-    AlertN("تم حفظ التقدم أيها الضائع في حياتك");
     document.getElementById("save").textContent = "إعادة";
-    e.stopPropagation();   
     document.getElementById("save").addEventListener("click", _ => {
       location.reload();
     })
-    submitBestScore(localStorage.getItem("userName"), score);
-  }, {once: true})
-});
+    
+    // Verify score is reasonable for the duration
+    if (isScoreValid(score, gameDuration)) {
+      submitScore(score, gameDuration);
+    } else {
+      alert("Score submission rejected - possible cheating detected");
+    }
+  }
+  
+  function updateGameTimer() {
+    const currentTime = new Date();
+    const elapsed = (currentTime - gameStartTime) / 1000;
+    document.getElementById('timer').textContent = elapsed.toFixed(1);
+  }
+  
+  function isScoreValid(score, duration) {
+    // Implement your game-specific logic here
+    // Example: Max 10 points per second
+    const maxPossibleScore = duration * 10;
+    return score <= maxPossibleScore;
+  }
 
-})
+  
+}
+
+
+async function submitScore(newScore, duration) {
+  try {
+    const { data: { user }, error: userError } = await client.auth.getUser();
+    
+    if (userError || !user) {
+      AlertN("You must be logged in to save scores");
+      return false;
+    }
+
+    // First get existing score
+    const { data: existing, error: fetchError } = await client
+      .from('scores')
+      .select('score')
+      .eq('user_id', user.id)
+      .single();
+
+    let shouldUpdate = true;
+    
+    if (!fetchError && existing) {
+      shouldUpdate = newScore > existing.score;
+    }
+
+    if (shouldUpdate) {
+      const { error } = await client
+        .from('scores')
+        .upsert({
+          user_id: user.id,
+          score: newScore,
+          game_duration: duration,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id' // Update
+        });
+
+      if (error) throw error;
+      AlertN("تم تحديث النتيجة بنجاح!");
+      return true;
+    }
+    
+    AlertN("نتيجتك الحالية لا تزال الأفضل!");
+    return false;
+
+  } catch (error) {
+    console.error("Score update error:", error);
+    AlertN("فشل حفظ النتيجة. يُرجى المحاولة مرة أخرى.");
+    return false;
+  }
+}
