@@ -75,7 +75,9 @@ async function handleSignUp() {
     if (error) throw error;
     
     AlertN("تم إرسال رابط التفعيل إلى بريدك الإلكتروني");
-    document.getElementById('signUp').reset();
+    document.getElementById('userNameSignUp').value = "";
+   document.getElementById('emailSignUp').value = "";
+    document.getElementById('passwordSignUp').value = "";
     showLognIn();
     
   } catch (error) {
