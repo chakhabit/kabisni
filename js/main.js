@@ -822,3 +822,7 @@ async function submitScore(newScore, duration) {
     return false;
   }
 }
+
+if (window.location.pathname !== '/') {
+  window.location.href = '/';
+}
