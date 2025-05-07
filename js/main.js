@@ -136,6 +136,7 @@ async function updateUIAfterAuth() {
       
       document.getElementById('signUp').style.display = 'none';
       document.getElementById('logIn').style.display = 'none';
+      document.querySelector('.leaderBoarder').style.display = 'none';
       document.getElementById('start_menu').style.display = 'flex';
       document.getElementById('username-display').textContent = username;
     } else {
@@ -607,10 +608,7 @@ function startGame() {
     bug.src = "assets/img/Hoarding_Bug_Lethal_Company.png";
     bug.classList.add("bug");
     circle.after(bug);
-    bug.style.cssText = `position: absolute; user-select: none; user-drag: none;-webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none; width: 50px; left: calc(${Math.abs(
+    bug.style.cssText = `position: absolute; width: 50px; left: calc(${Math.abs(
     randX
   )}% - 50px); top: calc(${Math.abs(
       randY
@@ -719,8 +717,6 @@ function startGame() {
 
   document.getElementById("save").addEventListener("click", endGame, {once: true});
 
-
-
   function endGame() {
     if (!isGameRunning) return;
     
@@ -749,13 +745,14 @@ function startGame() {
   function updateGameTimer() {
     const currentTime = new Date();
     const elapsed = (currentTime - gameStartTime) / 1000;
+    // console.log(elapsed);
+    // console.log(elapsed * 7);
+    // console.log("=======================");
     document.getElementById('timer').textContent = elapsed.toFixed(1);
   }
   
   function isScoreValid(score, duration) {
-    // Implement your game-specific logic here
-    // Example: Max 10 points per second
-    const maxPossibleScore = duration * 10;
+    const maxPossibleScore = duration * 7;
     return score <= maxPossibleScore;
   }
 

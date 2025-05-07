@@ -31,6 +31,11 @@ canvas,
 svg {
   display: block;
   max-width: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none
 }
 
 input,
@@ -622,7 +627,6 @@ h6 {
       border-radius: 10px;
       padding: 10px;
       color: #e2fdff;
-      text-transform: lowercase;
       border: 1px solid #ccc;
       width: 100%;
       &::placeholder {
