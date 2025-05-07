@@ -316,6 +316,16 @@ h6 {
   overflow: hidden;
   height: 75%;
 }
+.enemy {
+  position: absolute;
+  top: 50%;
+  right: -100%;
+  transform: translateY(-50%);
+  mix-blend-mode: exclusion;
+  z-index: 9;
+  animation: rtl 4s ease-out infinite;
+  display: none;
+}
 .leaderBoarder {
   position: relative;
   display: flex;
@@ -758,6 +768,23 @@ h6 {
   }
   100% {
     transform: rotateX(360deg) rotateY(0deg) rotateZ(0deg);
+  }
+}
+@keyframes rtl {
+  0% {
+    right: -20%;
+  }
+  30% {
+    right: 30%;
+  }
+  60% {
+    right: 60%;
+  }
+  80% {
+    right: 80%;
+  }
+  100% {
+    right: 120%;
   }
 }
 

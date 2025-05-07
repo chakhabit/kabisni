@@ -1,6 +1,6 @@
 // URL checker
-if (window.location.pathname !== 'https://chakhabit.github.io/kabisni/') {
-  window.location.href = 'https://chakhabit.github.io/kabisni/';
+if (window.location.pathname !== '/') {
+  window.location.href = '/';
 }
 // database
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
@@ -507,6 +507,16 @@ let gameStartTime;
 let gameEndTime;
 let gameTimer;
 let isGameRunning = false;
+
+// before starting !
+if(isGameRunning == false) {
+  setTimeout(() => {
+    document.querySelector(".enemy").style.display = "block";
+    setTimeout(() => {
+      document.querySelector(".enemy").style.display = "none";
+    }, 4000);
+  }, 5000);
+}
 
 document.querySelector("#start").addEventListener("click", startGame);
 
