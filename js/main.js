@@ -1,3 +1,7 @@
+// URL checker
+if (window.location.pathname !== 'https://chakhabit.github.io/kabisni/') {
+  window.location.href = 'https://chakhabit.github.io/kabisni/';
+}
 // database
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 
@@ -821,8 +825,4 @@ async function submitScore(newScore, duration) {
     AlertN("فشل حفظ النتيجة. يُرجى المحاولة مرة أخرى.");
     return false;
   }
-}
-
-if (window.location.pathname !== '/') {
-  window.location.href = '/';
 }
