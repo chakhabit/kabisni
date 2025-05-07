@@ -1,7 +1,3 @@
-// URL checker
-if (window.location.pathname !== '/') {
-  window.location.href = '/';
-}
 // database
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 
@@ -512,6 +508,9 @@ let isGameRunning = false;
 if(isGameRunning == false) {
   setTimeout(() => {
     document.querySelector(".enemy").style.display = "block";
+    const spaceVoice = document.createElement("audio");
+    spaceVoice.src = "assets/sound/space-sound.mp3"
+    spaceVoice.play();
     setTimeout(() => {
       document.querySelector(".enemy").style.display = "none";
     }, 4000);
