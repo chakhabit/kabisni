@@ -136,9 +136,20 @@ async function updateUIAfterAuth() {
       
       document.getElementById('signUp').style.display = 'none';
       document.getElementById('logIn').style.display = 'none';
+      document.getElementById('pause').style.display = 'none';
       document.querySelector('.leaderBoarder').style.display = 'none';
       document.getElementById('start_menu').style.display = 'flex';
       document.getElementById('username-display').textContent = username;
+      if(isGameRunning == true) {
+        document.getElementById('start_menu').style.display = "none";
+        setTimeout(() => {
+          document.getElementById('start_menu').style.animation = "fade-out 1s";
+          setTimeout(() => {
+            document.getElementById('start_menu').style.display = "none";
+          }, 999);
+        }, 5000);
+      }
+
     } else {
       showLoginScreen();
     }
@@ -638,6 +649,9 @@ function startGame() {
         clearInterval(scoreCount);
         clearInterval(gameLoop);
         document.querySelector(".looser").style.display = "flex";
+        document.querySelector("#save").remove();
+        clearInterval(gameTimer);
+        document.querySelector(".main_container").style.pointerEvents = "none";
       } else startLv3();
     }
   }
@@ -799,7 +813,7 @@ async function submitScore(newScore, duration) {
       return true;
     }
     
-    AlertN("نتيجتك الحالية لا تزال الأفضل!");
+    AlertN("نتيجتك السابقة لا تزال الأفضل!");
     return false;
 
   } catch (error) {
