@@ -905,7 +905,7 @@ function startLv3() {
     
   setTimeout(() => {
     location.reload();
-  }, 10000);
+  }, 11000);
     
     // Verify score is reasonable for the duration
     if (isScoreValid(score, gameDuration, storePoints, oldStorePoints)) {
@@ -916,7 +916,6 @@ function startLv3() {
       document.body.innerHTML = `<p class="cheaterText">Why are you cheating ?</p> <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <script type="module" src="assets/js/main.js"></script>`;
       const iHateCheaters = document.createElement("audio");
       iHateCheaters.src = "assets/sound/cheater.mp3";
-      iHateCheaters.volume = .5;
       iHateCheaters.play();
       markAsCheater();
     }
