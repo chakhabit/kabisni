@@ -8,6 +8,23 @@ const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     detectSessionInUrl: true
   }
 });
+
+// show password
+document.querySelectorAll(".showPass").forEach(element => {
+  element.addEventListener("click", function() {
+    const passwordInput = this.previousElementSibling;
+    
+    if (passwordInput.value !== '' && passwordInput.type === "password") {
+      passwordInput.type = "text";
+      element.classList.add("eye-icon-before");
+      element.style.backgroundColor = "#ffffff";
+    } else {
+      passwordInput.type = "password";
+      element.classList.remove("eye-icon-before");
+      element.style.backgroundColor = "var(--main-color)";
+    }
+  });
+});
 // Sign Up
 async function signUp(email, password, username) {
   try {
@@ -34,7 +51,10 @@ async function signIn(email, password) {
     password
   });
 
-  if (error) throw error;
+  if (error) {
+    alertUser("يرجى التأكد من البيانات");
+    return null;
+  } 
   return data.user;
 }
 
@@ -65,7 +85,7 @@ async function handleSignUp() {
   const password = document.getElementById('passwordSignUp').value;
 
   if (!username || !email || !password) {
-    AlertN("الرجاء ملء جميع الحقول");
+    alertUser("الرجاء ملء جميع الحقول");
     return;
   }
 
@@ -74,20 +94,40 @@ async function handleSignUp() {
     
     if (error) throw error;
     
-    AlertN("تم إرسال رابط التفعيل إلى بريدك الإلكتروني");
+    alertUser("تم إرسال رابط التفعيل إلى بريدك الإلكتروني");
     document.getElementById('userNameSignUp').value = "";
    document.getElementById('emailSignUp').value = "";
     document.getElementById('passwordSignUp').value = "";
     showLognIn();
     
   } catch (error) {
-    AlertN(`خطأ في التسجيل: ${error.message}`);
+    alertUser("خطأ في التسجيل: " + error);
   }
 }
+
+// Verify if he sign in
+window.addEventListener('load', async () => {
+  const {
+    data: { session }
+  } = await client.auth.getSession();
+
+  if (session) {
+    console.log('User is still signed in:', session.user);
+    updateUIAfterAuth();
+  } else {
+    console.log('No active session');
+  }
+});
+
 document.querySelector("#logInAccount").addEventListener("click", handleLogin);
 async function handleLogin() {
   const email = document.getElementById('userNameLogIn').value;
   const password = document.getElementById('passwordLogIn').value;
+
+  if (!email || !password) {
+    alertUser("الرجاء ملء جميع الحقول");
+    return;
+  }
   
   try {
     await signIn(email, password);
@@ -107,7 +147,10 @@ async function handleLogout() {
   }
 }
 // Update the UI after auth check
+let lastUIUpdate = 0;
 async function updateUIAfterAuth() {
+  if (Date.now() - lastUIUpdate < 1000) return;
+  lastUIUpdate = Date.now();
   try {
     // Check auth state with proper error handling
     const { data: { user }, error } = await client.auth.getUser();
@@ -155,7 +198,7 @@ async function updateUIAfterAuth() {
     }
   } catch (error) {
     console.error("UI update error:", error);
-    AlertN("Session error. Please refresh the page.");
+    alertUser("Session error. Please refresh the page.");
     showLoginScreen();
   }
 }
@@ -166,46 +209,56 @@ function showLoginScreen() {
   document.getElementById('start_menu').style.display = 'none';
 }
 
-// Initialize auth state listener
-client.auth.onAuthStateChange((event, session) => {
-  console.log("Auth state changed:", event);
-  if (event === 'INITIAL_SESSION') {
-    // Handle initial session loading
-    updateUIAfterAuth();
-  } else if (event === 'SIGNED_IN') {
-    // Wait for session to fully initialize
-    setTimeout(updateUIAfterAuth, 500);
-  }
-});
 
-// Modified initialization code
-document.addEventListener('DOMContentLoaded', () => {
-  // Give time for session restoration
-  setTimeout(updateUIAfterAuth, 300);
-});
-// Check auth state on page load
-document.addEventListener('DOMContentLoaded', () => {
-  updateUIAfterAuth();
-});
-
-
-////////////////////////////////////////////
-function AlertN(msg) {
-  let TheAlert = document.querySelector(".alert");
-  const alertN = document.createElement("audio");
-  alertN.src = "assets/sound/alert.mp3";
-  alertN.play();
-  TheAlert.textContent = msg;
-  TheAlert.style.display = "block";
-  TheAlert.style.userSelect = "none";
+// FrameWorks ====================================================================================
+function alertUser(msg) {
+  const theAlert = document.createElement("span");
+  theAlert.classList.add("alert");
+  theAlert.dir = "rtl";
+  document.querySelector(".main_container").appendChild(theAlert);
+  const theAlertSound = document.createElement("audio");
+  theAlertSound.src = "assets/sound/alert.mp3";
+  theAlertSound.play();
+  theAlert.textContent = msg ?? "null";
+  theAlert.style.display = "block";
+  theAlert.style.userSelect = "none";
   setTimeout(() => {
-    TheAlert.style.animation = "fade-out 1s";
+    theAlert.style.animation = "fade-out 1s";
     setTimeout(() => {
-      TheAlert.style.display = "none";
+      theAlert.remove()
     }, 999);
   }, 5000);
 }
-// best kabasin
+
+async function getUserColumnData(col) {
+  try {
+    const { data: { session } } = await client.auth.getSession();
+    if (!session) {
+      return null;
+    }
+
+    const { data: { user }, error: userError } = await client.auth.getUser();
+    if(userError) throw userError;
+    if (!user) {
+      return null;
+    }
+
+    const { data: existing, error } = await client
+      .from('scores')
+      .select(col)
+      .eq('user_id', user.id)
+      .single();
+
+      if(error) throw error;
+    if(!existing) return null;
+      return existing[col];
+
+    } catch (error) {
+      console.error("error in getUserColumnData", error);
+      return;
+    }
+}
+// LeaderBorder ===================================================================================
 document.querySelector("#bestKabasin").addEventListener("click", e => {
   const startMenu = document.querySelector("#start_menu");
   const leaderBoard = document.querySelector(".leaderBoarder"); 
@@ -234,7 +287,6 @@ document.querySelector("#bestKabasin").addEventListener("click", e => {
   
     if (data.length > 0) {
       const topPlayer = data[0];
-      console.log(`🏆 Top player: ${topPlayer.profiles.username}, Score: ${topPlayer.score}`);
       return {name: topPlayer.profiles.username, score: topPlayer.score};
     } else {
       console.log("No scores found yet.");
@@ -271,14 +323,11 @@ async function getOtherPlayer() {
   }
 
   if (data.length > 0) {
-    const topPlayer = data[0];
-    console.log(`🏆 player: ${topPlayer.username}, Score: ${topPlayer.score}`);
     return data.map(player => ({
       name: player.profiles?.username || 'Anonymous', 
       score: player.score
     }));
   } else {
-    console.log("No scores found yet.");
     return {msg: "none"};
   }
 }
@@ -332,8 +381,6 @@ else {
 }
 })();
 
-
-
 });
 document.querySelector(".leaderBoarder .close_container").addEventListener("click", () => {
   const leaderBoard = document.querySelector(".leaderBoarder");
@@ -346,8 +393,47 @@ document.querySelector(".leaderBoarder .close_container").addEventListener("clic
     startMenu.style.animation = "fade-in 1s";
   }, 999);
 });
-// Store
+// Store ==========================================================================
+let isGameRunning = false;
 function store() {
+
+  // Generate store boxes
+  function createBox(product, productPrice, categories) {
+    const box = document.createElement("div");
+    box.classList.add("box", `p${productPrice}`);
+
+    const container = document.createElement("div");
+    const RootCSS = document.querySelector(":root");
+    switch (categories) {
+      case "shape": container.classList.add(product, "storeBox", "shape"); break;
+      case "color": container.classList.add("circle", "storeBox", "color");
+      container.style.backgroundColor = `${product}`;
+      break;
+      case "animation": container.classList.add("circle", "storeBox", "animation");
+      container.style.animation = `1s ${product} infinite`;
+      container.style.transformOrigin = `top`;
+      break;
+    }
+
+    const productPriceLabel = document.createElement("span");
+    productPriceLabel.style.cssText = `
+    position: relative;
+    top: 57%;
+    font-weight: 500;
+    color: #3a0ca3;
+    font-size: 13px;
+  `;
+    productPriceLabel.textContent = `${productPrice} زمبيط`;
+    productPriceLabel.setAttribute("dir", "rtl");
+
+    box.appendChild(productPriceLabel);
+    box.appendChild(container);
+    return box;
+  }
+
+  // Insert row and skins
+  const menu = document.getElementById("menu");
+function generateRowSkin() {
   const skins = [
     "circle",
     "triangleUp",
@@ -359,94 +445,142 @@ function store() {
     "pacman",
   ];
   let skinPrice = 0;
-  const menu = document.getElementById("menu");
-
-  // Generate store boxes
-  function createBox(skin, skinPrice) {
-    const box = document.createElement("div");
-    box.classList.add("box", `p${skinPrice}`);
-
-    const shape = document.createElement("div");
-    shape.classList.add(skin, "storeBox", "shape");
-
-    const skinPriceLabel = document.createElement("span");
-    skinPriceLabel.style.cssText = `
-    position: relative;
-    top: 57%;
-    font-weight: 500;
-    color: #3a0ca3;
-    font-size: 13px;
-  `;
-    skinPriceLabel.textContent = `${skinPrice} زمبيط`;
-    skinPriceLabel.setAttribute("dir", "rtl");
-
-    box.appendChild(skinPriceLabel);
-    box.appendChild(shape);
-    return box;
-  }
-
-  // Generate store rows
   for (let i = 0; i < skins.length; i += 2) {
     const row = document.createElement("div");
-    row.classList.add("row");
+    row.classList.add("row", "skin");
     menu.after(row);
 
-    // First skin box
-    row.appendChild(createBox(skins[i], skinPrice));
+    row.appendChild(createBox(skins[i], skinPrice, "shape"));
     skinPrice += 200;
 
-    // Second skin box (if exists)
     if (i + 1 < skins.length) {
-      row.appendChild(createBox(skins[i + 1], skinPrice));
+      row.appendChild(createBox(skins[i + 1], skinPrice, "shape"));
       skinPrice += 200;
     }
   }
+}
 
-  // Verification if he get the skin price or not
-  function pointStoreVerification() {
-    document.querySelector("#pointStore").textContent = localStorage.getItem("storePoint") || 0;
-    const storePoint = parseInt(localStorage.getItem("storePoint") || "0");
-    const skinPrice = [0, 200, 400, 600, 800, 1000, 1200, 1400];
-    skinPrice.forEach((point) => {
-      if (storePoint >= point) {
-        document.querySelectorAll(`.row .p${point}`).forEach((el) => {
-          el.style.pointerEvents = "all";
-          el.classList.add("no-before");
-          el.classList.add("Unlocked");
-        });
-      }
-    });
+function generateRowColors() {
+  const chillColors = ["#A8D8EA", "#76C4D4","#4A89DC","#88C9A1","#6DBCB3","#F5C3C2","#D4B8D9","#E8D5B5","#D9BF77","#E0E0E0"];
+  let colorPrice = 0;
+  for (let i = 0; i < chillColors.length; i += 2) {
+    const row = document.createElement("div");
+    row.classList.add("row", "color");
+    menu.after(row);
+
+    row.appendChild(createBox(chillColors[i], colorPrice, "color"));
+    colorPrice += 100;
+
+    if (i + 1 < chillColors.length) {
+      row.appendChild(createBox(chillColors[i + 1], colorPrice, "color"));
+      colorPrice += 100;
+    }
   }
-  setInterval(() => {
+}
+
+function generateRowAnimations() {
+  const chillAnimations = ["none", "rotateRightShape", "rotateLeftShape"];
+  let animationPrice = 0;
+  for (let i = 0; i < chillAnimations.length; i += 2) {
+    const row = document.createElement("div");
+    row.classList.add("row", "color");
+    menu.after(row);
+
+    row.appendChild(createBox(chillAnimations[i], animationPrice, "animation"));
+    animationPrice += 500;
+
+    if (i + 1 < chillAnimations.length) {
+      row.appendChild(createBox(chillAnimations[i + 1], animationPrice, "animation"));
+      animationPrice += 500;
+    }
+  }
+}
+
+
+function menuSection() {
+ document.getElementById("skins").addEventListener("click",() => {
+   document.querySelectorAll(".row").forEach(e =>  {
+     e.remove()
+    },)
+    generateRowSkin();
     pointStoreVerification();
-  }, 500);
-
-
-
-  function heChooseTheSkin() {
-    document.querySelectorAll(".Unlocked").forEach((el) => {
-      el.addEventListener("click", (e) => {
-
-        document.querySelectorAll(".Unlocked").forEach((box) => {
-          box.style.backgroundColor = "";
-        });
-  
-        e.currentTarget.style.backgroundColor = "rgba(255, 215, 0, 0.23)";
-  
-        // Update player skin
-        const player = document.querySelector(".player");
-        player.classList.remove(player.classList[2]);
-        player.classList.add(e.currentTarget.lastElementChild.classList[0]);
-        localStorage.setItem("shape", e.currentTarget.lastElementChild.classList[0]
-        );
-      });
-    });
+ });
+  document.getElementById("animations").addEventListener("click",() => {
+    document.querySelectorAll(".row").forEach(e =>  {
+      e.remove()
+    })
+    generateRowAnimations();
+    pointStoreVerification();
+   });
+  document.getElementById("colors").addEventListener("click", () => {
+    document.querySelectorAll(".row").forEach(e =>  {
+      e.remove()
+    })
+    generateRowColors();
+    pointStoreVerification();
+  });
+}
+menuSection();
+  // Insert Score + pointStore Before Game Start
+  async function pointsInsertBeforeStart() {
+    const storePoint = await getUserColumnData("storePoints");
+    const preScore = await getUserColumnData("score");
+    if(isGameRunning === false) {
+      document.querySelector("#pointStore").textContent = storePoint;
+      document.querySelector(".score span").textContent = preScore;
+    }
   }
+  pointsInsertBeforeStart();
+  
+  // Verification if he get the skin price or not
+        async function pointStoreVerification() {
+          if(document.getElementsByClassName("row").length > 0) {
+            const box = document.querySelectorAll(".row .box");
 
-  setInterval(() => {
-    heChooseTheSkin();
-  }, 500);
+          const storePoint = await getUserColumnData("storePoints");
+          box.forEach((point) => {
+          if (storePoint >= parseInt(point.classList[1].slice(1))) {
+            document.querySelectorAll(`.row .p${parseInt(point.classList[1].slice(1))}`).forEach((el) => {
+              el.style.pointerEvents = "all";
+              el.classList.add("no-before");
+              el.classList.add("Unlocked");
+            });
+          }
+        });
+        }
+        heChooseTheSkin()
+        function heChooseTheSkin() {
+          document.querySelectorAll(".Unlocked").forEach((el) => {
+            el.addEventListener("click", (e) => {
+      
+              document.querySelectorAll(".Unlocked").forEach((box) => {
+                box.style.backgroundColor = "";
+              });
+        
+              e.currentTarget.style.backgroundColor = "rgba(255, 215, 0, 0.23)";
+      
+              // Update player skin
+              const player = document.querySelector(".player");
+              if( e.target.classList.contains("shape")) {
+                player.classList.remove(player.classList[2]);
+                player.classList.add(e.currentTarget.lastElementChild.classList[0]);
+                localStorage.setItem("shape", e.currentTarget.lastElementChild.classList[0]);
+              }
+              if( e.target.classList.contains("color")) {
+                document.querySelector(":root").style.setProperty('--bg-shape', e.currentTarget.lastElementChild.style.backgroundColor);
+                localStorage.setItem("color", e.currentTarget.lastElementChild.style.backgroundColor);
+              }
+              if( e.target.classList.contains("animation")) {
+      
+                player.classList.remove(player.classList[4]);
+               player.style.setProperty('animation', e.currentTarget.lastElementChild.style.animation);
+                localStorage.setItem("animation", e.currentTarget.lastElementChild.style.animation);
 
+              }
+            });
+          });
+        }
+      }
 
   function openCloseStore() {
     document.querySelector(".store_icon button").addEventListener("click", () => {
@@ -470,11 +604,14 @@ function store() {
   openCloseStore();
 }
 store();
-saveTheSkin();
+rememberTheSkin();
 
-function saveTheSkin() {
+function rememberTheSkin() {
   document.querySelector(".player").classList.remove(document.querySelector(".player").classList[2]);
   document.querySelector(".player").classList.add(localStorage.getItem("shape") || "circle");
+  document.querySelector(":root").style.setProperty('--bg-shape', localStorage.getItem("color"));
+  document.querySelector(".player").style.setProperty('animation', localStorage.getItem("animation"));
+
 }  
 
 // User click No
@@ -488,45 +625,44 @@ document.querySelector("#abd").addEventListener("click", (e) => {
 
 // click before start
 let cheeter = (_) => {
-  AlertN("لا تحاول الغش أيها الوغد");
+  alertUser("لا تحاول الغش أيها الوغد");
   document.body.style.animation = "rotate 2s ease";
 };
-document
-  .querySelector(".player")
-  .addEventListener("click", cheeter, { once: true });
-
-
-// Start The Game
-let scoreD = document.querySelector(".score span");
-scoreD.textContent = Math.max(localStorage.getItem("score"), 0);
-let gameStartTime;
-let gameEndTime;
-let gameTimer;
-let isGameRunning = false;
+document.querySelector(".player").addEventListener("click", cheeter, { once: true });
 
 // before starting !
-if(isGameRunning == false) {
+function enemyShowBeforeSatart(show) {
+  if(show) {
   setTimeout(() => {
-    document.querySelector(".enemy").style.display = "block";
     const spaceVoice = document.createElement("audio");
     spaceVoice.src = "assets/sound/space-sound.mp3"
+    document.querySelector(".enemy").style.display = "block";
     spaceVoice.play();
     setTimeout(() => {
       document.querySelector(".enemy").style.display = "none";
     }, 4000);
   }, 5000);
+} else {
+    document.querySelector(".enemy").style.display = "none";
 }
-
+}
+enemyShowBeforeSatart(true);
+// Start The Game ====================================================================
+let gameStartTime;
+let gameEndTime;
+let gameTimer;
 document.querySelector("#start").addEventListener("click", startGame);
 
-function startGame() {
+async function startGame() {
   isGameRunning = true;
   gameStartTime = new Date();
   gameTimer = setInterval(updateGameTimer, 1000);
-
-
-  // display : Block | none
+  enemyShowBeforeSatart(false);
+  startLv3();
+  // UI display : Block | none
   document.querySelector("#save").style.display = "block";
+  document.querySelector("#save").style.cursor = "no-drop";
+
   document.querySelector("#timer").style.display = "block";
   document.querySelector(".player").removeEventListener("click", cheeter);
   document.querySelector("#start_menu").style.animation = "fade-out 1s";
@@ -535,37 +671,31 @@ function startGame() {
   }, 999);
 
   setTimeout(() => {
-    AlertN("لا تنسى حفظ تقدمك بعد الانتهاء")
+    alertUser("لا تنسى حفظ تقدمك بعد الانتهاء")
   }, 5000);
+
   // Level 1
   let circle = document.querySelector(".player");
-  // const chillColors = ["#A8D8EA", "#76C4D4","#4A89DC","#88C9A1","#6DBCB3","#F5C3C2","#D4B8D9","#E8D5B5","#D9BF77","#E0E0E0"];
   let score = 0;
-  localStorage.setItem(
-    "score",
-    Math.max(score, localStorage.getItem("score"), 0)
-  );
   let vittese = 2000;
   let preScore = score;
-  let scoreCount = setInterval(() => {
-    scoreD.textContent = score;
-    document.querySelector("#pointStore").textContent =
-      localStorage.getItem("storePoint") || 0;
-    localStorage.setItem(
-      "score",
-      Math.max(score, localStorage.getItem("score"), 0)
-    );
+  let scoreDisplay = document.querySelector(".score span");
+  let storePointsCase =  document.querySelector("#pointStore");
+  const oldStorePoints =  await getUserColumnData("storePoints");
+  let storePoints = oldStorePoints;
+  scoreDisplay.textContent = 0;
 
-    if (score !== preScore) {
-      const currentScore = parseInt(localStorage.getItem("storePoint")) || 0;
-      const pointChange = score - preScore;
-      localStorage.setItem("storePoint", currentScore + pointChange);
+function updateScore() {
+      scoreDisplay.textContent = score;
+    if (preScore !== score) {
+      storePoints += (score - preScore); // here
+      storePointsCase.textContent = storePoints;
       preScore = score;
     }
-  }, 500);
+}
+
   let loop = setInterval(randomly, vittese);
   let count = 1;
-  let i = 0;
   let lv2 = false;
 
   function randomly() {
@@ -577,9 +707,7 @@ function startGame() {
     circle.style.cssText = `left: calc(${Math.abs(
       randX
     )}% - 50px); top: calc(${Math.abs(randY)}% - 50px)`;
-    // circle.style.backgroundColor = `${chillColors[i]}`;
     if (count % 3 === 0 && vittese > 100) {
-      // i = (i + 1) % chillColors.length;
       clearInterval(loop);
       vittese = Math.max(vittese - 100, 100);
       loop = setInterval(randomly, vittese);
@@ -599,12 +727,12 @@ function startGame() {
 
     circle.style.cssText = `left: calc(${Math.abs(randX)}% - 50px); 
                            top: calc(${Math.abs(randY)}% - 50px)`;
-    // circle.style.backgroundColor = chillColors[i];
   }
+
   let gameLoop;
   function startLv2() {
     gameLoop = setInterval(moveCircle, 900);
-    AlertN("إنتبه من الهورينغ... تخلص منه !!");
+    alertUser("إنتبه من الهورينغ... تخلص منه !!");
     yippyLoop();
   }
 
@@ -641,7 +769,10 @@ function startGame() {
     function yippyEatScore() {
       if (document.contains(bug)) {
         score--;
-        pointMinus("-1", randX, randY);
+        if(updateScore) {
+          updateScore()
+          pointMinus("-1", randX, randY);
+        } 
       } else {
         clearInterval(scoreEat);
       }
@@ -659,42 +790,22 @@ function startGame() {
     }, 3000);
     function thereAreAnyBugs() {
       if (document.getElementsByClassName("bug").length > 0) {
-        clearInterval(scoreCount);
-        clearInterval(gameLoop);
-        document.querySelector(".looser").style.display = "flex";
-        document.querySelector("#save").remove();
-        clearInterval(gameTimer);
-        document.querySelector(".main_container").style.pointerEvents = "none";
+        looser(" لقد فشلت في التكبيس !", "🪳", "الهورينغ استغل الفوضى، وطار بالانتصار 🪰💥");
       } else startLv3();
     }
   }
   // Press This Level 3
-  function startLv3() {
-    ArrowList = ["ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight"];
-    let randArrow = null;
-    function pressThis() {
-      randArrow = Math.floor(Math.random() * ArrowList.length);
-      console.log(`press ${ArrowList[randArrow]}`);
-    }
-    pressThis();
-    document.addEventListener("keydown", (e) => {
-      if (ArrowList.includes(e.key)) {
-        if (e.key === ArrowList[randArrow]) {
-          score++;
-          console.log(score);
-        }
-        pressThis();
-      }
-    });
-  }
+function startLv3() {
+  console.log("3");
+}
   // point + - display
   function pointPlus(p, myEvent) {
     let point = document.createElement("span");
     point.textContent = p;
     point.style.cssText = `
-      position: absolute;
-      left: ${myEvent.pageX}px;
-      top: ${myEvent.pageY}px;
+      position: fixed;
+      left: ${myEvent.clientX}px;
+      top: ${myEvent.clientY}px;
       color: red;
       font-weight: bold;
       z-index: 10;
@@ -737,12 +848,37 @@ function startGame() {
     }, 500);
   }
   // Click The Circle
-  circle.addEventListener("click", (e) => {
+  let circleClicker =  circle.addEventListener("click", (e) => {
     score++;
-    pointPlus("+1", e);
+    if(updateScore) {
+      updateScore();
+      pointPlus("+1", e);
+    }
   });
 
-  document.getElementById("save").addEventListener("click", endGame, {once: true});
+  setTimeout(() => {
+    document.querySelector("#save").style.removeProperty("cursor");
+    document.querySelector("#save").removeAttribute("title");
+    document.getElementById("save").addEventListener("click", endGame, {once: true});
+  }, 10000);
+
+
+  function looser(title, icon, paragraph) {
+        clearInterval(gameLoop);
+        document.querySelector("#save").remove();
+        clearInterval(gameTimer);
+        document.querySelector(".player").removeEventListener('click', circleClicker);
+        updateScore = null;
+        document.querySelector(".main_container").style.pointerEvents = "none";
+        const looserBox = document.createElement("div");
+        looserBox.dir = "rtl";
+        looserBox.classList.add("looser", "box");
+        looserBox.innerHTML = `
+        <h2><span>${icon}</span> ${title}</h2>
+        <p>${paragraph}</p>`;
+        document.querySelector(".main_container").appendChild(looserBox);
+
+  }
 
   function endGame() {
     if (!isGameRunning) return;
@@ -755,83 +891,105 @@ function startGame() {
   
     clearInterval(loop);
     clearInterval(gameLoop);
+      
     document.querySelector(".main_container").style.pointerEvents = "none";
+    document.querySelector("#start_menu").style.pointerEvents = "all";
+    document.querySelector(".store").style.pointerEvents = "all";
+    document.querySelector("#signUp").style.pointerEvents = "all";
+    document.querySelector("#logIn").style.pointerEvents = "all";
+    document.querySelector(".leaderBoarder").style.pointerEvents = "all";
     document.getElementById("save").textContent = "إعادة";
     document.getElementById("save").addEventListener("click", _ => {
       location.reload();
     })
     
+  setTimeout(() => {
+    location.reload();
+  }, 10000);
+    
     // Verify score is reasonable for the duration
-    if (isScoreValid(score, gameDuration)) {
-      submitScore(score, gameDuration);
+    if (isScoreValid(score, gameDuration, storePoints, oldStorePoints)) {
+      submitScore(score, gameDuration, storePoints);
     } else {
-      alert("Score submission rejected - possible cheating detected");
+      console.log("redirected to cheaters page");
+      document.body.innerHTML = "";
+      document.body.innerHTML = `<p class="cheaterText">Why are you cheating ?</p> <script type="module" src="assets/js/main.js"></script>`;
+      const iHateCheaters = document.createElement("audio");
+      iHateCheaters.src = "assets/sound/cheater.mp3";
+      iHateCheaters.volume = .5;
+      iHateCheaters.play();
     }
   }
   
   function updateGameTimer() {
     const currentTime = new Date();
     const elapsed = (currentTime - gameStartTime) / 1000;
-    // console.log(elapsed);
-    // console.log(elapsed * 7);
-    // console.log("=======================");
+
     document.getElementById('timer').textContent = elapsed.toFixed(1);
   }
   
-  function isScoreValid(score, duration) {
-    const maxPossibleScore = duration * 7;
-    return score <= maxPossibleScore;
+  function isScoreValid(score, duration, newStorePoints, oldStorePoints) {
+    const maxPossibleScore = duration * 10;
+    if(score > maxPossibleScore) {
+      alertUser("You cheater, score");
+      return false;
+    }
+    if(score !== (newStorePoints - oldStorePoints)) {
+      alertUser("You cheater, score != zombit");
+      return false;
+    }
+    return true;
   }
-
-  
 }
 
 
-async function submitScore(newScore, duration) {
+async function submitScore(newScore, duration, zombits) {
   try {
     const { data: { user }, error: userError } = await client.auth.getUser();
     
     if (userError || !user) {
-      AlertN("You must be logged in to save scores");
+      alertUser("You must be logged in to save scores");
       return false;
     }
 
-    // First get existing score
     const { data: existing, error: fetchError } = await client
       .from('scores')
-      .select('score')
+      .select('score, storePoints')
       .eq('user_id', user.id)
       .single();
 
-    let shouldUpdate = true;
-    
-    if (!fetchError && existing) {
-      shouldUpdate = newScore > existing.score;
+    if (fetchError && !existing) {
+      console.error("Error fetching score:", fetchError);
+      return false;
     }
 
-    if (shouldUpdate) {
-      const { error } = await client
-        .from('scores')
-        .upsert({
-          user_id: user.id,
-          score: newScore,
-          game_duration: duration,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id' // Update
-        });
+    const shouldUpdateScore = !existing || newScore > existing.score;
 
-      if (error) throw error;
-      AlertN("تم تحديث النتيجة بنجاح!");
-      return true;
+    const { error } = await client
+      .from('scores')
+      .upsert({
+        user_id: user.id,
+        score: shouldUpdateScore ? newScore : existing?.score,
+        storePoints: zombits, // Always update zombits
+        game_duration: duration,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id'
+      });
+
+    if (error) throw error;
+
+    if (shouldUpdateScore) {
+      alertUser("تم تحديث النتيجة بنجاح!");
+    } else {
+      alertUser("نتيجتك السابقة لا تزال الأفضل!");
     }
-    
-    AlertN("نتيجتك السابقة لا تزال الأفضل!");
-    return false;
+
+    return true;
 
   } catch (error) {
     console.error("Score update error:", error);
-    AlertN("فشل حفظ النتيجة. يُرجى المحاولة مرة أخرى.");
+    alertUser("فشل حفظ النتيجة. يُرجى المحاولة مرة أخرى.");
     return false;
   }
 }

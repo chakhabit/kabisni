@@ -5,21 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="لعبة تكبيس الدوائر المضحكة! واجه حشرات طائرة، لاما جائعة، وكائن الهورينغ الغامض في مغامرة مليئة بالمرح والفوضى. العب الآن مجانًا!"
-    />
-    <meta
-      name="keywords"
-      content="لعبة, تكبيس الدوائر, ألعاب مضحكة, ألعاب عربية, حشرات طائرة, لعبة الهورينغ, ألعاب تحدي, العاب مجانية, akhabit"
+      content="كبسني لعبة ويب إدمانية! اجمع النقاط، حارب حشرات الهورينغ، أنقذ صديقك لهنت، وواجه البوس الشرير في عالم رمادي مليء بالتحديات. سجل حسابك وتنافس مع أفضل الكابسين!"
     />
     <meta name="author" content="َAlaa MEKIBES" />
     <meta property="og:title" content="كبسني | Kabisni" />
     <meta
       property="og:description"
-      content="حارب الدوائر الهاربة قبل أن تتحول إلى كوارث مضحكة!"
+      content="كبسني لعبة ويب إدمانية! اجمع النقاط، حارب حشرات الهورينغ، أنقذ صديقك لهنت، وواجه البوس الشرير في عالم رمادي مليء بالتحديات. سجل حسابك وتنافس مع أفضل الكابسين!"
     />
     <meta property="og:url" content="https://chakhabit.github.io/kabisni" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://i.ibb.co/Swz34JQK/image.png" />
+    <meta property="og:image" content="https://i.ibb.co/TMshCMYb/Kabisni-thumbnail.png" />
+    <link rel="stylesheet" href="assets/js/manifest.json">
     <link href="https://fonts.cdnfonts.com/css/funny" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,7 +29,7 @@
       href="assets/img/favicon-32x32.png"
       type="image/x-icon"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
     <title>كبسني | Kabisni</title>
   </head>
   <body>
@@ -60,23 +57,22 @@
           <p>رصيدك: <span id="pointStore"></span> زمبيط</p>
         </div>
         <ul id="menu" class="menu">
-          <li><button>skin</button></li>
-          <!-- <li><button>animation</button></li> -->
-          <!-- <li><button>points</button></li> -->
+          <li><button id="skins">skins</button></li>
+          <li><button id="animations">animations</button></li>
+          <li><button id="colors">colors</button></li>
         </ul>
       </div>
       <div class="shape player circle"></div>
-      <div dir="rtl" class="looser box">
-        <h2><span>🪳</span> لقد فشلت في التكبيس !</h2>
-        <p>الهورينغ استغل الفوضى، وطار بالانتصار 🪰💥</p>
-      </div>
 
             <!-- Start Logn In-->
             <div dir="rtl" id="logIn" class="start box">
               <h2>هل أنت مستعد للتكبيس !</h2>
               <div class="inputs">
                 <input id="userNameLogIn" type="email" placeholder="بريد المكبس">
-                <input id="passwordLogIn" type="password" placeholder="كلمة المرور">
+                <div class="pass">
+                  <input id="passwordLogIn" type="password" placeholder="كلمة المرور">
+                  <div class="eye-icon showPass"></div>
+                </div>
               </div>
               <p class="ask">ليس لديك حساب. <button id="donthaveAccount">إنشاء</button></p>
               <div class="buttons">
@@ -90,7 +86,10 @@
         <div class="inputs">
           <input id="userNameSignUp" type="text" placeholder="إسم المكبس">
           <input id="emailSignUp" type="email" placeholder="بريد المكبس">
+          <div class="pass">
           <input id="passwordSignUp" type="password" placeholder="كلمة المرور">
+          <div class="eye-icon showPass"></div>
+          </div>
         </div>
 
         <p class="ask"> لديك حساب. <button id="haveAccount">دخول</button></p>
@@ -106,7 +105,7 @@
         <div class="buttons">
         <button id="start">إبدأ</button>
         <button type="button" id="abd">لا</button>
-        <button id="bestKabasin">أفضل الكباسين</button>
+        <button id="bestKabasin" title="أفضل الضائعين">أفضل الكباسين</button>
         </div>
       </div>
       <!-- Start leaderBoarder -->
@@ -135,11 +134,10 @@
           <button id="logInAccount">عودة</button>
         </div>
       </div>
+      <!-- enemy -->
       <div class="enemy">
         <div class="space-invader"></div>
       </div>
-      <span class="alert" dir="rtl"></span>
-
     </main>
     <!-- Start Footter -->
     <footer class="footer_container">
@@ -148,9 +146,9 @@
       </p>
             <!-- Timer -->
             <div id="timer" style="font-weight: 500; display: none;">0.0</div>
-      <button id="save">حفظ التقدم</button>
+      <button id="save" title="انتظر 10 ثواني">حفظ التقدم</button>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="assets/js/main.js"></script>
   </body>
 </html>
