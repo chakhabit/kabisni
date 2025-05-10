@@ -676,7 +676,7 @@ async function startGame() {
 
   // Level 1
   let circle = document.querySelector(".player");
-  let score = 0;
+  let score = 200;
   let vittese = 2000;
   let preScore = score;
   let scoreDisplay = document.querySelector(".score span");
@@ -913,11 +913,12 @@ function startLv3() {
     } else {
       console.log("redirected to cheaters page");
       document.body.innerHTML = "";
-      document.body.innerHTML = `<p class="cheaterText">Why are you cheating ?</p> <script type="module" src="assets/js/main.js"></script>`;
+      document.body.innerHTML = `<p class="cheaterText">Why are you cheating ?</p> <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <script type="module" src="assets/js/main.js"></script>`;
       const iHateCheaters = document.createElement("audio");
       iHateCheaters.src = "assets/sound/cheater.mp3";
       iHateCheaters.volume = .5;
       iHateCheaters.play();
+      markAsCheater();
     }
   }
   
@@ -939,6 +940,32 @@ function startLv3() {
       return false;
     }
     return true;
+  }
+}
+
+
+async function markAsCheater() {
+  try {
+    const { data: { user }, error: userError } = await client.auth.getUser();
+
+    if (userError || !user) {
+      alertUser("You must be logged in to mark as cheater");
+      return false;
+    }
+
+    const { error } = await client
+      .from('scores')
+      .update({ cheat: true })
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+
+    alertUser("Cheat flag updated.");
+    return true;
+  } catch (error) {
+    console.error("Failed to update cheat flag:", error);
+    alertUser("حدث خطأ أثناء تحديث حالة الغش.");
+    return false;
   }
 }
 
