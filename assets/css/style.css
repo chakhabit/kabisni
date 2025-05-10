@@ -539,7 +539,6 @@ h6 {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    width: 55%;
     input {
       outline: none;
       background-color: transparent;
@@ -548,7 +547,7 @@ h6 {
       padding: 10px;
       color: #e2fdff;
       border: 1px solid #ccc;
-      width: 100%;
+      width: fit-content;
       &::placeholder {
         color: #e2fdff;
         font-weight: 500;
