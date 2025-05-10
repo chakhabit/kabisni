@@ -676,7 +676,7 @@ async function startGame() {
 
   // Level 1
   let circle = document.querySelector(".player");
-  let score = 200;
+  let score = 0;
   let vittese = 2000;
   let preScore = score;
   let scoreDisplay = document.querySelector(".score span");
