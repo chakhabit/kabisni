@@ -113,7 +113,7 @@ window.addEventListener('load', async () => {
   } = await client.auth.getSession();
 
   if (session) {
-    console.log('User is still signed in:', session.user);
+    console.log('User is still signed in:');
     updateUIAfterAuth();
   } else {
     console.log('No active session');
@@ -148,38 +148,6 @@ async function handleLogout() {
   }
 }
 
-async function ensureScoresRow(userId) {
-  // try to fetch an existing row
-  const { data: existing, error: fetchError } = await client
-    .from('scores')
-    .select('user_id')
-    .eq('user_id', userId)
-    .single();
-  if (fetchError && fetchError.code !== 'PGRST116') {
-    // PGRST116 = "No rows" – ignore that, it just means none exists
-    console.error('Error checking scores row:', fetchError);
-    return;
-  }
-
-  // if it’s already there, bail out
-  if (existing) return;
-
-  // otherwise insert the new record with your defaults
-  const { error: insertError } = await client
-    .from('scores')
-    .insert({
-      user_id: userId,
-      score: 0,
-      storePoints: 0,
-      game_duration: 0,
-      cheat: false,
-      // any other columns you have
-    });
-  if (insertError) console.error('Error creating scores row:', insertError);
-}
-
-
-
 // Update the UI after auth check
 let lastUIUpdate = 0;
 async function updateUIAfterAuth() {
@@ -199,7 +167,6 @@ async function updateUIAfterAuth() {
     }
 
     if (user) {
-      await ensureScoresRow(user.id);
       await new Promise(resolve => setTimeout(resolve, 100));
       
       // Get profile data with error handling
